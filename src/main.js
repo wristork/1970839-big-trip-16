@@ -1,5 +1,3 @@
-'use strict';
-
 import { renderTemplate, RenderPosition } from './render';
 import { createTripInfoTemplate } from './view/info-view';
 import { createSiteMenuTemplate } from './view/site-menu-view';
