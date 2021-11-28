@@ -7,6 +7,14 @@ import { createEventListTemplate } from './view/event-list-view';
 import { createEventItemTemplate } from './view/event-item-view';
 import { createEditPointTemplate } from './view/edit-point-view';
 
+import { generateEvent } from './mock/event';
+
+const EVENTS_AMOUNT = 10;
+
+const events = Array.from({length: EVENTS_AMOUNT}, generateEvent);
+
+events.sort((a, b) => a.date.start - b.date.start);
+
 const mainControls = document.querySelector('.trip-main');
 const mainControlsNav = document.querySelector('.trip-controls__navigation');
 const mainControlsFilter = document.querySelector('.trip-controls__filters');
@@ -22,10 +30,8 @@ renderTemplate(eventsContainer, createEventListTemplate(), RenderPosition.BEFORE
 
 const eventsList = document.querySelector('.trip-events__list');
 
-const EVENTS_AMOUNT = 3;
-
-for (let i = 0; i < EVENTS_AMOUNT; i++) {
-  renderTemplate(eventsList, createEventItemTemplate(), RenderPosition.BEFOREEND);
+for (let i = 0; i < events.length; i++) {
+  renderTemplate(eventsList, createEventItemTemplate(events[i]), RenderPosition.BEFOREEND);
 }
 
 renderTemplate(eventsList, createEditPointTemplate(), RenderPosition.AFTERBEGIN);
