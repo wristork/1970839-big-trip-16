@@ -23,7 +23,7 @@ const getEventDuration = (startDate, endDate) => {
 };
 
 const createOffersTemplate = (offers) => (
-  Array.from(offers, ({text, price}) => (
+  offers.map(({text, price}) => (
     `<li class="event__offer">
       <span class="event__offer-title">${text}</span>
       &plus;&euro;&nbsp;
