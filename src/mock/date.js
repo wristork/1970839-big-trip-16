@@ -1,8 +1,8 @@
-import { getRandomInteger } from "../utils";
-import dayjs from "dayjs";
+import { getRandomInteger } from '../utils';
+import dayjs from 'dayjs';
 
 export const generateDate = () => {
-  const maxDaysGap = 7;
+  const maxDaysGap = 10;
   const maxMinutesGap = 180;
 
   const start = dayjs()
@@ -13,12 +13,12 @@ export const generateDate = () => {
   const dayAmount = getRandomInteger(0, 1);
   const hourAmount = getRandomInteger(0, 10);
   const minuteAmount = getRandomInteger(0, 60);
-    
+
   const end = dayjs(start)
     .add(dayAmount, 'day')
     .add(hourAmount, 'hour')
     .add(minuteAmount, 'minute')
     .toDate();
-    
+
   return { start, end };
 };

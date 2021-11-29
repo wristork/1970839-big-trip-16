@@ -1,45 +1,40 @@
 import dayjs from 'dayjs';
-import { getRandomInteger } from '../utils';
+import { getFormattedDate } from '../utils';
 
 const getEventDuration = (startDate, endDate) => {
   startDate = dayjs(startDate);
   endDate = dayjs(endDate);
-  
+
   const dayDiff = endDate.diff(startDate, 'day');
   const hourDiff = endDate.diff(startDate, 'hour');
-  const minuteDiff = endDate.diff(startDate, 'minute'); 
+  const minuteDiff = endDate.diff(startDate, 'minute');
 
   const day = String(dayDiff).padStart(2, '0');
   const hour = String(hourDiff - (dayDiff * 24)).padStart(2, '0');
   const minute = String(minuteDiff - (hourDiff * 60)).padStart(2, '0');
-  
+
   if (dayDiff) {
-    return `${day}D ${hour}H ${minute}M`;    
+    return `${day}D ${hour}H ${minute}M`;
   } else if (hourDiff) {
     return `${hour}H ${minute}M`;
   } else {
     return `${minute}M`;
-  };
+  }
 };
 
-const createOffersTemplate = (offers) => {
-  if (offers == null) return '';
-  
-  return Array.from(offers, (offer) => {
-    return `<li class="event__offer">
-      <span class="event__offer-title">${offer.name}</span>
+const createOffersTemplate = (offers) => (
+  Array.from(offers, ({text, price}) => (
+    `<li class="event__offer">
+      <span class="event__offer-title">${text}</span>
       &plus;&euro;&nbsp;
-      <span class="event__offer-price">${offer.price}</span>
-    </li>`;
-  }).join('');
-};
+      <span class="event__offer-price">${price}</span>
+    </li>`
+  )).join('')
+);
 
-export const createEventItemTemplate = (event = {}) => {
+export const createEventTemplate = (event = {}) => {
   const {
-    date = {
-      start: dayjs().toDate(), 
-      end: dayjs().add(getRandomInteger(1, 24), 'hour').toDate()
-    },
+    date,
     routeType,
     destination,
     price,
@@ -47,25 +42,28 @@ export const createEventItemTemplate = (event = {}) => {
     isFavorite
   } = event;
 
-  const offersTemplate = createOffersTemplate(offers);
+  const offersTemplate = offers
+    ? createOffersTemplate(offers.filter((offer) => offer.isChecked))
+    : '';
+
   const duration = getEventDuration(date.start, date.end);
 
-  const favoriteClassName = isFavorite 
+  const favoriteClassName = isFavorite
     ? 'event__favorite-btn event__favorite-btn--active'
     : 'event__favorite-btn';
-  
+
   return `<li class="trip-events__item">
     <div class="event">
-      <time class="event__date" datetime="${dayjs(date.start).format('YYYY-MM-DD')}">${dayjs(date.start).format('MMM D')}</time>
+      <time class="event__date" datetime="${getFormattedDate(date.start, 'YYYY-MM-DD')}">${getFormattedDate(date.start, 'MMM D')}</time>
       <div class="event__type">
         <img class="event__type-icon" width="42" height="42" src="img/icons/${routeType.toLowerCase()}.png" alt="Event type icon">
       </div>
       <h3 class="event__title">${routeType} ${destination.place}</h3>
       <div class="event__schedule">
         <p class="event__time">
-          <time class="event__start-time" datetime="${dayjs(date.start).format('YYYY-MM-DDTHH:mm')}">${dayjs(date.start).format('HH:mm')}</time>
+          <time class="event__start-time" datetime="${getFormattedDate(date.start, 'YYYY-MM-DDTHH:mm')}">${getFormattedDate(date.start, 'HH:mm')}</time>
           &mdash;
-          <time class="event__end-time" datetime="${dayjs(date.end).format('YYYY-MM-DDTHH:mm')}">${dayjs(date.end).format('HH:mm')}</time>
+          <time class="event__end-time" datetime="${getFormattedDate(date.end, 'YYYY-MM-DDTHH:mm')}">${getFormattedDate(date.end, 'HH:mm')}</time>
         </p>
         <p class="event__duration">${duration}</p>
       </div>

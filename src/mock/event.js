@@ -6,8 +6,8 @@ import { generateRoute } from './route';
 import { generateDate } from './date';
 
 export const generateEvent = () => {
-  const routeType = generateRoute(); 
-  const isHaveOffer = Boolean(getRandomInteger(0, 1));  
+  const routeType = generateRoute();
+  const isHaveOffer = Boolean(getRandomInteger(0, 1));
 
   return ({
     date: generateDate(),

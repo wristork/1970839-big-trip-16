@@ -4,12 +4,13 @@ import { createSiteMenuTemplate } from './view/site-menu-view';
 import { createControlsFilterTemplate } from './view/controls-filter-view';
 import { createEventSorterTemplate } from './view/event-sorter-view';
 import { createEventListTemplate } from './view/event-list-view';
-import { createEventItemTemplate } from './view/event-item-view';
-import { createEditPointTemplate } from './view/edit-point-view';
+import { createEventTemplate } from './view/event-view';
+import { createEditEventTemplate } from './view/edit-event-view';
+import { createEmptyMessageTemplate } from './view/event-list-empty';
 
 import { generateEvent } from './mock/event';
 
-const EVENTS_AMOUNT = 10;
+const EVENTS_AMOUNT = 20;
 
 const events = Array.from({length: EVENTS_AMOUNT}, generateEvent);
 
@@ -19,19 +20,23 @@ const mainControls = document.querySelector('.trip-main');
 const mainControlsNav = document.querySelector('.trip-controls__navigation');
 const mainControlsFilter = document.querySelector('.trip-controls__filters');
 
-renderTemplate(mainControls, createTripInfoTemplate(), RenderPosition.AFTERBEGIN);
 renderTemplate(mainControlsNav, createSiteMenuTemplate(), RenderPosition.BEFOREEND);
 renderTemplate(mainControlsFilter, createControlsFilterTemplate(), RenderPosition.BEFOREEND);
 
 const eventsContainer = document.querySelector('.trip-events');
 
-renderTemplate(eventsContainer, createEventSorterTemplate(), RenderPosition.BEFOREEND);
-renderTemplate(eventsContainer, createEventListTemplate(), RenderPosition.BEFOREEND);
+if (events.length > 0) {
+  renderTemplate(mainControls, createTripInfoTemplate(events), RenderPosition.AFTERBEGIN);
 
-const eventsList = document.querySelector('.trip-events__list');
+  renderTemplate(eventsContainer, createEventSorterTemplate(), RenderPosition.BEFOREEND);
+  renderTemplate(eventsContainer, createEventListTemplate(), RenderPosition.BEFOREEND);
 
-for (let i = 0; i < events.length; i++) {
-  renderTemplate(eventsList, createEventItemTemplate(events[i]), RenderPosition.BEFOREEND);
+  const eventsList = document.querySelector('.trip-events__list');
+
+  renderTemplate(eventsList, createEditEventTemplate(events[0]), RenderPosition.BEFOREEND);
+  for (let i = 1; i < events.length; i++) {
+    renderTemplate(eventsList, createEventTemplate(events[i]), RenderPosition.BEFOREEND);
+  }
+} else {
+  renderTemplate(eventsContainer, createEmptyMessageTemplate(), RenderPosition.BEFOREEND);
 }
-
-renderTemplate(eventsList, createEditPointTemplate(), RenderPosition.AFTERBEGIN);
