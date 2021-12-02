@@ -26,4 +26,4 @@ const getRandomAmountOffers = () => {
 
 const routeOffers = new Map(ROUTES.map((routeName) => [routeName, getRandomAmountOffers()]));
 
-export const generateOffers = (routeType) => routeOffers.get(routeType);
+export const generateOffers = (routeType = ROUTES[0]) => routeOffers.get(routeType);

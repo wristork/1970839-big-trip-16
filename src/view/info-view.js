@@ -1,3 +1,4 @@
+import { createElement } from '../render';
 import { getFormattedDate, isSameMonth } from '../utils';
 
 const calcCost = (events) => {
@@ -27,7 +28,7 @@ const getTripPath = (events) => {
   return path;
 };
 
-export const createTripInfoTemplate = (events) => {
+const createTripInfoTemplate = (events) => {
   const startDate = events[0].date.start;
   const endDate = events[events.length - 1].date.end;
 
@@ -51,3 +52,28 @@ export const createTripInfoTemplate = (events) => {
     </p>
   </section>`;
 };
+
+export default class InfoComponent {
+  #element = null;
+  #events = null;
+
+  constructor(events) {
+    this.#events = events;
+  }
+  
+  get element() {
+    if (this.#element == null) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createTripInfoTemplate(this.#events);
+  }
+
+  removeElement() {
+    this.#element = null
+  }
+}

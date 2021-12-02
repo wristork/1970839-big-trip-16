@@ -1,42 +1,90 @@
-import { renderTemplate, RenderPosition } from './render';
-import { createTripInfoTemplate } from './view/info-view';
-import { createSiteMenuTemplate } from './view/site-menu-view';
-import { createControlsFilterTemplate } from './view/controls-filter-view';
-import { createEventSorterTemplate } from './view/event-sorter-view';
-import { createEventListTemplate } from './view/event-list-view';
-import { createEventTemplate } from './view/event-view';
-import { createEditEventTemplate } from './view/edit-event-view';
-import { createEmptyMessageTemplate } from './view/event-list-empty';
-
+import { render, RenderPosition } from './render';
 import { generateEvent } from './mock/event';
+
+import SiteMenuComponent from './view/site-menu-view';
+import ControlsMainComponent from './view/controls-main-view';
+import InfoComponent from './view/info-view';
+import FiltersCompontent from './view/filters';
+import EventSorterComponent from './view/event-sorter-view';
+import EventListComponent from './view/event-list-view';
+import EventComponent from './view/event-view';
+import EditEventComponent from './view/edit-event-view';
+import noEventsCompontent from './view/no-events-view';
 
 const EVENTS_AMOUNT = 20;
 
 const events = Array.from({length: EVENTS_AMOUNT}, generateEvent);
-
 events.sort((a, b) => a.date.start - b.date.start);
 
-const mainControls = document.querySelector('.trip-main');
-const mainControlsNav = document.querySelector('.trip-controls__navigation');
-const mainControlsFilter = document.querySelector('.trip-controls__filters');
+const renderControls = (container) => {  
+  const control = new ControlsMainComponent();
 
-renderTemplate(mainControlsNav, createSiteMenuTemplate(), RenderPosition.BEFOREEND);
-renderTemplate(mainControlsFilter, createControlsFilterTemplate(), RenderPosition.BEFOREEND);
+  render(container, control.element, RenderPosition.AFTERBEGIN);
 
-const eventsContainer = document.querySelector('.trip-events');
+  render(control.element, new SiteMenuComponent().element, RenderPosition.BEFOREEND);
+  render(control.element, new FiltersCompontent().element, RenderPosition.BEFOREEND);
 
-if (events.length > 0) {
-  renderTemplate(mainControls, createTripInfoTemplate(events), RenderPosition.AFTERBEGIN);
-
-  renderTemplate(eventsContainer, createEventSorterTemplate(), RenderPosition.BEFOREEND);
-  renderTemplate(eventsContainer, createEventListTemplate(), RenderPosition.BEFOREEND);
-
-  const eventsList = document.querySelector('.trip-events__list');
-
-  renderTemplate(eventsList, createEditEventTemplate(events[0]), RenderPosition.BEFOREEND);
-  for (let i = 1; i < events.length; i++) {
-    renderTemplate(eventsList, createEventTemplate(events[i]), RenderPosition.BEFOREEND);
+  if (events.length) {
+    render(control.element, new InfoComponent(events).element, RenderPosition.BEFOREBEGIN);
   }
-} else {
-  renderTemplate(eventsContainer, createEmptyMessageTemplate(), RenderPosition.BEFOREEND);
+};
+
+const renderEvent = (container, event) => {
+  const editEventComponent = new EditEventComponent(event);
+  const eventComponent = new EventComponent(event); 
+  
+  const replaceToEdit = () => {
+    container.replaceChild(editEventComponent.element, eventComponent.element);
+  };
+  
+  const replaceToNormal = () => {
+    container.replaceChild(eventComponent.element, editEventComponent.element);
+  };
+
+  const onEscKeyDown = (evt) => {
+    if (evt.key === 'Escape' || evt.key === 'Esc') {
+      evt.preventDefault();
+      replaceToNormal();
+
+      document.removeEventListener('keydown', onEscKeyDown);
+    }
+  };
+
+  eventComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+    replaceToEdit();
+
+    document.addEventListener('keydown', onEscKeyDown);
+  });
+  
+  editEventComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+    replaceToNormal();
+
+    document.removeEventListener('keydown', onEscKeyDown);
+  });
+  
+  editEventComponent.element.querySelector('form').addEventListener('submit', (evt) => {
+    evt.preventDefault();
+
+    replaceToNormal();
+  });
+  
+  render(container, eventComponent.element, RenderPosition.BEFOREEND);
 }
+
+const renderEvents = (container) => {
+  if (events.length) {
+    const eventsList = new EventListComponent();
+
+    render(container, new EventSorterComponent().element, RenderPosition.BEFOREEND);
+    render(container, eventsList.element, RenderPosition.BEFOREEND);
+        
+    for (let i = 0; i < EVENTS_AMOUNT; i++) {
+      renderEvent(eventsList.element, events[i]);
+    }
+  } else {
+    render(container, new noEventsCompontent().element, RenderPosition.BEFOREEND);
+  }
+};
+
+renderControls(document.querySelector('.trip-main'));
+renderEvents(document.querySelector('.trip-events'));
