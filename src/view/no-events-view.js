@@ -1,6 +1,6 @@
-import { createElement } from "../render";
+import { createElement } from '../render';
 
-const createEmptyMessageTemplate = () => ('<p class="trip-events__msg">Click New Event to create your first point</p>');
+const createEmptyMessageTemplate = () => '<p class="trip-events__msg">Click New Event to create your first point</p>';
 
 export default class NoEventsComponent {
   #element = null;
@@ -9,6 +9,8 @@ export default class NoEventsComponent {
     if (this.#element === null) {
       this.#element = createElement(this.template);
     }
+
+    return this.#element;
   }
 
   get template() {
@@ -16,6 +18,7 @@ export default class NoEventsComponent {
   }
 
   removeElement() {
-    this.#element = null
+    this.#element = null;
   }
 }
+

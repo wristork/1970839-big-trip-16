@@ -28,7 +28,7 @@ const createDestinationOptionsTemplate = (destinations) => (
   Array.from(destinations, (destination) => (`<option value="${destination}"></option>`)).join('')
 );
 
-const createEditEventTemplate = (event) => {  
+const createEditEventTemplate = (event) => {
   const { date, routeType, destination, price, offers } = event;
 
   const iconName = routeType.toLowerCase();
@@ -146,6 +146,6 @@ export default class EditEventComponent {
   }
 
   removeElement() {
-    this.#element = null
+    this.#element = null;
   }
 }

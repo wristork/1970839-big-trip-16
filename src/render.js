@@ -25,6 +25,6 @@ export const render = (container, element, position = RenderPosition.BEFOREEND) 
 export const createElement = (template) => {
   const temporaryElement = document.createElement('div');
   temporaryElement.innerHTML = template;
-  
+
   return temporaryElement.firstElementChild;
-}
+};

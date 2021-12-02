@@ -102,13 +102,13 @@ export default class EventComponent {
     }
 
     return this.#element;
-  }  
+  }
 
   get template() {
     return createEventTemplate(this.#events);
   }
-  
+
   removeElement() {
-    this.#element = null
+    this.#element = null;
   }
 }

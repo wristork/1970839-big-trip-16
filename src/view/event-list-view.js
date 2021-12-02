@@ -1,6 +1,6 @@
-import { createElement } from "../render";
+import { createElement } from '../render';
 
-const createEventListTemplate = () => (`<ul class="trip-events__list"></ul>`);
+const createEventListTemplate = () => '<ul class="trip-events__list"></ul>';
 
 export default class EventListComponent {
   #element = null;
@@ -9,7 +9,7 @@ export default class EventListComponent {
     if (this.#element === null) {
       this.#element = createElement(this.template);
     }
-    
+
     return this.#element;
   }
 
@@ -18,6 +18,6 @@ export default class EventListComponent {
   }
 
   removeElement() {
-    this.#element = null
+    this.#element = null;
   }
 }

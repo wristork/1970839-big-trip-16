@@ -1,6 +1,6 @@
-import { createElement } from "../render";
+import { createElement } from '../render';
 
-const createControlsMainTemplate = () => (`<div class="trip-main__trip-controls  trip-controls"></div>`);
+const createControlsMainTemplate = () => '<div class="trip-main__trip-controls  trip-controls"></div>';
 
 export default class ControlsMainComponent {
   #element = null;
@@ -18,6 +18,6 @@ export default class ControlsMainComponent {
   }
 
   removeElement() {
-    this.#element = null
+    this.#element = null;
   }
 }

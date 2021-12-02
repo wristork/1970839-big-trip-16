@@ -60,9 +60,9 @@ export default class InfoComponent {
   constructor(events) {
     this.#events = events;
   }
-  
+
   get element() {
-    if (this.#element == null) {
+    if (this.#element === null) {
       this.#element = createElement(this.template);
     }
 
@@ -74,6 +74,6 @@ export default class InfoComponent {
   }
 
   removeElement() {
-    this.#element = null
+    this.#element = null;
   }
 }

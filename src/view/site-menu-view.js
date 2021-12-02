@@ -1,4 +1,4 @@
-import { createElement } from "../render";
+import { createElement } from '../render';
 
 const createSiteMenuTemplate = () => (`<div class="trip-controls__navigation">
   <h2 class="visually-hidden">Switch trip view</h2>
@@ -24,6 +24,6 @@ export default class SiteMenuComponent {
   }
 
   removeElement() {
-    this.#element = null
+    this.#element = null;
   }
 }

@@ -1,4 +1,4 @@
-import { createElement } from "../render";
+import { createElement } from '../render';
 
 const createFilterTemplate = () => (`<div class="trip-controls__filters">
   <h2 class="visually-hidden">Filter events</h2>
@@ -38,6 +38,6 @@ export default class FiltersCompontent {
   }
 
   removeElement() {
-    this.#element = null
+    this.#element = null;
   }
 }

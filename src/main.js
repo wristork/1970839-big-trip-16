@@ -16,7 +16,7 @@ const EVENTS_AMOUNT = 20;
 const events = Array.from({length: EVENTS_AMOUNT}, generateEvent);
 events.sort((a, b) => a.date.start - b.date.start);
 
-const renderControls = (container) => {  
+const renderControls = (container) => {
   const control = new ControlsMainComponent();
 
   render(container, control.element, RenderPosition.AFTERBEGIN);
@@ -31,12 +31,12 @@ const renderControls = (container) => {
 
 const renderEvent = (container, event) => {
   const editEventComponent = new EditEventComponent(event);
-  const eventComponent = new EventComponent(event); 
-  
+  const eventComponent = new EventComponent(event);
+
   const replaceToEdit = () => {
     container.replaceChild(editEventComponent.element, eventComponent.element);
   };
-  
+
   const replaceToNormal = () => {
     container.replaceChild(eventComponent.element, editEventComponent.element);
   };
@@ -55,21 +55,21 @@ const renderEvent = (container, event) => {
 
     document.addEventListener('keydown', onEscKeyDown);
   });
-  
+
   editEventComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
     replaceToNormal();
 
     document.removeEventListener('keydown', onEscKeyDown);
   });
-  
+
   editEventComponent.element.querySelector('form').addEventListener('submit', (evt) => {
     evt.preventDefault();
 
     replaceToNormal();
   });
-  
+
   render(container, eventComponent.element, RenderPosition.BEFOREEND);
-}
+};
 
 const renderEvents = (container) => {
   if (events.length) {
@@ -77,7 +77,7 @@ const renderEvents = (container) => {
 
     render(container, new EventSorterComponent().element, RenderPosition.BEFOREEND);
     render(container, eventsList.element, RenderPosition.BEFOREEND);
-        
+
     for (let i = 0; i < EVENTS_AMOUNT; i++) {
       renderEvent(eventsList.element, events[i]);
     }

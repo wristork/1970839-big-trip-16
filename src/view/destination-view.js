@@ -46,6 +46,6 @@ export default class DestinationComponent {
   }
 
   removeElement() {
-    this.#element = null
+    this.#element = null;
   }
 }

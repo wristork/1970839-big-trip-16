@@ -1,3 +1,5 @@
+import { createElement } from '../render';
+
 import DestinationComponent from './destination-view';
 import OffersComponent from './offers-view';
 
@@ -38,6 +40,6 @@ export default class DetailsComponent {
   }
 
   removeElement() {
-    this.#element = null
+    this.#element = null;
   }
 }

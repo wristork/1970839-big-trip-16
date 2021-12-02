@@ -54,6 +54,6 @@ export default class OffersComponent {
   }
 
   removeElement() {
-    this.#element = null
+    this.#element = null;
   }
 }
