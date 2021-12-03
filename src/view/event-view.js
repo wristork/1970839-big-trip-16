@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { createElement } from '../render';
 import { getFormattedDate } from '../utils';
 
 const getEventDuration = (startDate, endDate) => {
@@ -32,7 +33,7 @@ const createOffersTemplate = (offers) => (
   )).join('')
 );
 
-export const createEventTemplate = (event = {}) => {
+const createEventTemplate = (event = {}) => {
   const {
     date,
     routeType,
@@ -86,3 +87,28 @@ export const createEventTemplate = (event = {}) => {
     </div>
   </li>`;
 };
+
+export default class EventComponent {
+  #element = null;
+  #events = null;
+
+  constructor(events) {
+    this.#events = events;
+  }
+
+  get element() {
+    if (this.#element === null) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createEventTemplate(this.#events);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}

@@ -1,8 +1,12 @@
 import dayjs from 'dayjs';
+
 import { ROUTES, DESTINATIONS } from '../const';
 import { generateDescription, generateImages } from '../mock/destination';
 import { generateOffers } from '../mock/offers';
 import { getFormattedDate } from '../utils';
+import { createElement } from '../render';
+
+import DetailsComponent from './event-details-view';
 
 const createRoutesTemplate = () => {
   const routes = ROUTES;
@@ -20,98 +24,12 @@ const createRoutesTemplate = () => {
   }).join('');
 };
 
-const createOffersTemplate = (offers) => (
-  Array.from(offers, (offer, index) => {
-    const name = offer.name;
-    const text = offer.text;
-    const price = offer.price;
-
-    const nameId = `${name}-${index + 1}`;
-
-    const checked = offer.isChecked ? 'checked' : '';
-
-    return `<div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${nameId}" type="checkbox" name="event-offer-${name}" ${checked}>
-      <label class="event__offer-label" for="event-offer-${nameId}">
-        <span class="event__offer-title">${text}</span>
-        &plus;&euro;&nbsp;
-        <span class="event__offer-price">${price}</span>
-      </label>
-    </div>`;
-  }).join('')
-);
-
-const createOfferSectionTemplate = (offers) => {
-  const offersTemplate = createOffersTemplate(offers);
-
-  return `<section class="event__section  event__section--offers">
-    <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-
-    <div class="event__available-offers">
-      ${offersTemplate}
-    </div>
-  </section>`;
-};
-
 const createDestinationOptionsTemplate = (destinations) => (
   Array.from(destinations, (destination) => (`<option value="${destination}"></option>`)).join('')
 );
 
-const createDestinationSectionTemplate = ({description, images}) => {
-
-  const imagesTemplate = (images && images.length)
-    ? Array.from(images, (imageSrc) => (`<img class="event__photo" src="${imageSrc}" alt="Event photo">`)).join('')
-    : '';
-
-  const photosContainerTemplate = (images && images.length)
-    ? `<div class="event__photos-container">
-      <div class="event__photos-tape">
-      ${imagesTemplate}
-      </div>
-    </div>`
-    : '';
-
-  const isHaveDescription = Boolean(description);
-  const isHavePhotos = Boolean(photosContainerTemplate);
-
-  return (isHaveDescription || isHavePhotos)
-    ? `<section class="event__section  event__section--destination">
-      <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-      <p class="event__destination-description">${description}</p>
-      ${photosContainerTemplate}
-    </section>`
-    : '';
-};
-
-const createDetailsTemplate = (offers, destination) => {
-  const offerSectionTemplate = (offers !== null && offers.length)
-    ? createOfferSectionTemplate(offers)
-    : '';
-
-  const destinationSectionTemplate = createDestinationSectionTemplate(destination);
-
-  return `<section class="event__details">
-    ${offerSectionTemplate}
-
-    ${destinationSectionTemplate}
-  </section>`;
-};
-
-export const createEditEventTemplate = (event = {}) => {
-  const {
-    date = {
-      start: dayjs().toDate(),
-      end: dayjs().add(1, 'day').toDate()
-    },
-    routeType = ROUTES[0],
-    destination = {
-      place: DESTINATIONS[0],
-      description: generateDescription(),
-      images: generateImages()
-    },
-    price = '',
-    offers = generateOffers(),
-  } = event;
+const createEditEventTemplate = (event) => {
+  const { date, routeType, destination, price, offers } = event;
 
   const iconName = routeType.toLowerCase();
   const routesTemplate = createRoutesTemplate();
@@ -123,7 +41,7 @@ export const createEditEventTemplate = (event = {}) => {
   const isHaveOffers = Boolean(offers !== null && offers.length);
 
   const detailsTemplate = (isHaveDescription || isHaveImages || isHaveOffers)
-    ? createDetailsTemplate(offers, destination)
+    ? new DetailsComponent(offers, destination).template
     : '';
 
   return `<li class="trip-events__item">
@@ -191,3 +109,43 @@ export const createEditEventTemplate = (event = {}) => {
     </form>
   </li>`;
 };
+
+const BLANK_EVENT = {
+  date: {
+    start: dayjs().toDate(),
+    end: dayjs().add(1, 'day').toDate()
+  },
+  routeType: ROUTES[0],
+  destination:  {
+    place: DESTINATIONS[0],
+    description: generateDescription(),
+    images: generateImages()
+  },
+  price: '',
+  offers: generateOffers(ROUTES[0])
+};
+
+export default class EditEventComponent {
+  #element = null;
+  #event = null;
+
+  constructor(event = BLANK_EVENT) {
+    this.#event = event;
+  }
+
+  get element() {
+    if (this.#element === null) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createEditEventTemplate(this.#event);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}

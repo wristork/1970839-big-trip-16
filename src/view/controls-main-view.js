@@ -1,8 +1,8 @@
 import { createElement } from '../render';
 
-const createEventListTemplate = () => '<ul class="trip-events__list"></ul>';
+const createControlsMainTemplate = () => '<div class="trip-main__trip-controls  trip-controls"></div>';
 
-export default class EventListComponent {
+export default class ControlsMainComponent {
   #element = null;
 
   get element() {
@@ -14,7 +14,7 @@ export default class EventListComponent {
   }
 
   get template() {
-    return createEventListTemplate();
+    return createControlsMainTemplate();
   }
 
   removeElement() {
