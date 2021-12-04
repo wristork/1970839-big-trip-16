@@ -15,9 +15,9 @@ const createRoutesTemplate = () => {
     const routeLower = route.toLowerCase();
 
     return `<div class="event__type-item">
-      <input id="event-type-${routeLower}-1" 
-        class="event__type-input  visually-hidden" 
-        type="radio" name="event-type" 
+      <input id="event-type-${routeLower}-1"
+        class="event__type-input  visually-hidden"
+        type="radio" name="event-type"
         value="${routeLower}">
       <label class="event__type-label  event__type-label--${routeLower}" for="event-type-${routeLower}-1">${route}</label>
     </div>`;
@@ -67,10 +67,10 @@ const createEditEventTemplate = (event) => {
           <label class="event__label  event__type-output" for="event-destination-1">
             ${routeType}
           </label>
-          <input class="event__input  event__input--destination" 
-            id="event-destination-1" type="text" 
-            name="event-destination" 
-            value="${destination.place}" 
+          <input class="event__input  event__input--destination"
+            id="event-destination-1" type="text"
+            name="event-destination"
+            value="${destination.place}"
             list="destination-list-1">
           <datalist id="destination-list-1">
             ${destinationOptionsTemplate}
@@ -79,15 +79,15 @@ const createEditEventTemplate = (event) => {
 
         <div class="event__field-group  event__field-group--time">
           <label class="visually-hidden" for="event-start-time-1">From</label>
-          <input class="event__input  event__input--time" 
-            id="event-start-time-1" type="text" 
-            name="event-start-time" 
+          <input class="event__input  event__input--time"
+            id="event-start-time-1" type="text"
+            name="event-start-time"
             value="${getFormattedDate(date.start, 'DD/MM/YY HH:mm')}">
           &mdash;
           <label class="visually-hidden" for="event-end-time-1">To</label>
-          <input class="event__input  event__input--time" 
-            id="event-end-time-1" type="text" 
-            name="event-end-time" 
+          <input class="event__input  event__input--time"
+            id="event-end-time-1" type="text"
+            name="event-end-time"
             value="${getFormattedDate(date.end, 'DD/MM/YY HH:mm')}">
         </div>
 

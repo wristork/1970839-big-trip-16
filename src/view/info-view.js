@@ -1,5 +1,13 @@
+import dayjs from 'dayjs';
 import { createElement } from '../render';
-import { getFormattedDate, isSameMonth } from '../utils';
+import { getFormattedDate } from '../utils';
+
+const isSameMonth = (dateA, dateB) => {
+  const monthA = dayjs(dateA).month();
+  const monthB = dayjs(dateB).month();
+
+  return monthA === monthB;
+};
 
 const calcCost = (events) => {
   const mainCost = events.map((event) => event.price).reduce((acc, value) => acc + value, 0);

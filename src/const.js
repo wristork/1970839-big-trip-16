@@ -1,7 +1,7 @@
 export const ROUTES = [
   'Check-in', 'Sightseeing', 'Restaurant',
   'Taxi', 'Bus', 'Train',
-  'Ship', 'Drive', 'Flight',
+  'Ship', 'Drive', 'Flight'
 ];
 
 export const DESTINATIONS = [
@@ -11,6 +11,8 @@ export const DESTINATIONS = [
   'Moscow',
   'Minsk',
   'Kiev',
+  'Warsaw',
+  'Melbourne'
 ];
 
 export const OFFERS = [

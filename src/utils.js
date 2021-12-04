@@ -7,10 +7,3 @@ export const getRandomInteger = (a = 1, b = 0) => {
 };
 
 export const getFormattedDate = (date, format) => `${dayjs(date).format(format)}`;
-
-export const isSameMonth = (dateA, dateB) => {
-  const monthA = dayjs(dateA).month();
-  const monthB = dayjs(dateB).month();
-
-  return monthA === monthB;
-};
