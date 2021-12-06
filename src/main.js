@@ -22,7 +22,7 @@ const renderControls = (container) => {
   render(container, control.element, RenderPosition.AFTERBEGIN);
 
   render(control.element, new SiteMenuComponent().element, RenderPosition.BEFOREEND);
-  render(control.element, new FiltersCompontent().element, RenderPosition.BEFOREEND);
+  render(control.element, new FiltersCompontent(events).element, RenderPosition.BEFOREEND);
 
   if (events.length) {
     render(control.element, new InfoComponent(events).element, RenderPosition.BEFOREBEGIN);
