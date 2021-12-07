@@ -11,8 +11,6 @@ import EventComponent from './view/event-view';
 import EditEventComponent from './view/edit-event-view';
 import noEventsCompontent from './view/no-events-view';
 
-import AbstractView from './view/abstract-view';
-
 const EVENTS_AMOUNT = 20;
 
 const events = Array.from({length: EVENTS_AMOUNT}, generateEvent);
