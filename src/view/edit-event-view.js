@@ -4,8 +4,8 @@ import { ROUTES, DESTINATIONS } from '../const';
 import { generateDescription, generateImages } from '../mock/destination';
 import { generateOffers } from '../mock/offers';
 import { getFormattedDate } from '../utils';
-import { createElement } from '../render';
 
+import AbstractView from './abstract-view';
 import DetailsComponent from './event-details-view';
 
 const createRoutesTemplate = () => {
@@ -125,27 +125,16 @@ const BLANK_EVENT = {
   offers: generateOffers(ROUTES[0])
 };
 
-export default class EditEventComponent {
-  #element = null;
+export default class EditEventComponent extends AbstractView {
   #event = null;
 
   constructor(event = BLANK_EVENT) {
+    super();
+
     this.#event = event;
-  }
-
-  get element() {
-    if (this.#element === null) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
     return createEditEventTemplate(this.#event);
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

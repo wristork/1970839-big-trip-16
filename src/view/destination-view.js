@@ -1,4 +1,4 @@
-import { createElement } from '../render';
+import AbstractView from './abstract-view';
 
 const createDestinationSectionTemplate = ({description, images}) => {
   const imagesTemplate = (images && images.length)
@@ -25,27 +25,16 @@ const createDestinationSectionTemplate = ({description, images}) => {
     : '';
 };
 
-export default class DestinationComponent {
-  #element = null;
+export default class DestinationComponent extends AbstractView {
   #destination = null;
 
   constructor(event) {
+    super();
+
     this.#destination = event;
-  }
-
-  get element() {
-    if (this.#element === null) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
     return createDestinationSectionTemplate(this.#destination);
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

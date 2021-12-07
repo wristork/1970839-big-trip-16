@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
-import { createElement } from '../render';
 import { getFormattedDate } from '../utils';
+import AbstractView from './abstract-view';
 
 const getEventDuration = (startDate, endDate) => {
   startDate = dayjs(startDate);
@@ -62,9 +62,17 @@ const createEventTemplate = (event = {}) => {
       <h3 class="event__title">${routeType} ${destination.place}</h3>
       <div class="event__schedule">
         <p class="event__time">
-          <time class="event__start-time" datetime="${getFormattedDate(date.start, 'YYYY-MM-DDTHH:mm')}">${getFormattedDate(date.start, 'HH:mm')}</time>
+          <time
+            class="event__start-time"
+            datetime="${getFormattedDate(date.start, 'YYYY-MM-DDTHH:mm')}">
+            ${getFormattedDate(date.start, 'HH:mm')}
+          </time>
           &mdash;
-          <time class="event__end-time" datetime="${getFormattedDate(date.end, 'YYYY-MM-DDTHH:mm')}">${getFormattedDate(date.end, 'HH:mm')}</time>
+          <time
+            class="event__end-time"
+            datetime="${getFormattedDate(date.end, 'YYYY-MM-DDTHH:mm')}">
+            ${getFormattedDate(date.end, 'HH:mm')}
+          </time>
         </p>
         <p class="event__duration">${duration}</p>
       </div>
@@ -88,27 +96,16 @@ const createEventTemplate = (event = {}) => {
   </li>`;
 };
 
-export default class EventComponent {
-  #element = null;
+export default class EventComponent extends AbstractView {
   #events = null;
 
   constructor(events) {
+    super();
+
     this.#events = events;
-  }
-
-  get element() {
-    if (this.#element === null) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
     return createEventTemplate(this.#events);
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

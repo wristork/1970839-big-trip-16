@@ -1,4 +1,4 @@
-import { createElement } from '../render';
+import AbstractView from './abstract-view';
 
 const createFilterTemplate = (length) => {
   const disabledAttribute = length ? '' : 'disabled';
@@ -36,27 +36,16 @@ const createFilterTemplate = (length) => {
   </div>`;
 };
 
-export default class FiltersCompontent {
-  #element = null;
+export default class FiltersCompontent extends AbstractView {
   #eventLength = null;
 
   constructor(events) {
+    super();
+
     this.#eventLength = events?.length || 0;
-  }
-
-  get element() {
-    if (this.#element === null) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
     return createFilterTemplate(this.#eventLength);
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }
