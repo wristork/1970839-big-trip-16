@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 
 import AbstractView from './abstract-view';
 
-import { getFormattedDate } from '../utils';
+import { getFormattedDate } from '../utils/date';
 
 const getEventDuration = (startDate, endDate) => {
   startDate = dayjs(startDate);

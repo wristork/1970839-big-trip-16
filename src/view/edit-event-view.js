@@ -6,7 +6,7 @@ import DetailsComponent from './event-details-view';
 import { ROUTES, DESTINATIONS } from '../const';
 import { generateDescription, generateImages } from '../mock/destination';
 import { generateOffers } from '../mock/offers';
-import { getFormattedDate } from '../utils';
+import { getFormattedDate } from '../utils/date';
 
 const createRoutesTemplate = () => {
   const routes = ROUTES;

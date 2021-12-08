@@ -1,4 +1,4 @@
-import { getRandomInteger } from '../utils';
+import { getRandomInteger } from '../utils/common';
 import { DESTINATIONS } from '../const';
 
 export const generateDescription = () => {

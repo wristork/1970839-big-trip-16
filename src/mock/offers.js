@@ -1,5 +1,5 @@
 import { ROUTES, OFFERS } from '../const';
-import { getRandomInteger } from '../utils';
+import { getRandomInteger } from '../utils/common';
 
 const generateOffer = () => {
   const offers = OFFERS;

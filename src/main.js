@@ -1,4 +1,4 @@
-import { render, RenderPosition } from './render';
+import { render, replace, RenderPosition } from './render';
 import { generateEvent } from './mock/event';
 
 import SiteMenuComponent from './view/site-menu-view';
@@ -19,13 +19,13 @@ events.sort((a, b) => a.date.start - b.date.start);
 const renderControls = (container) => {
   const control = new ControlsMainComponent();
 
-  render(container, control.element, RenderPosition.AFTERBEGIN);
+  render(container, control, RenderPosition.AFTERBEGIN);
 
-  render(control.element, new SiteMenuComponent().element, RenderPosition.BEFOREEND);
-  render(control.element, new FiltersCompontent(events).element, RenderPosition.BEFOREEND);
+  render(control, new SiteMenuComponent(), RenderPosition.BEFOREEND);
+  render(control, new FiltersCompontent(events), RenderPosition.BEFOREEND);
 
   if (events.length) {
-    render(control.element, new InfoComponent(events).element, RenderPosition.BEFOREBEGIN);
+    render(control, new InfoComponent(events), RenderPosition.BEFOREBEGIN);
   }
 };
 
@@ -33,12 +33,12 @@ const renderEvent = (container, event) => {
   const editEventComponent = new EditEventComponent(event);
   const eventComponent = new EventComponent(event);
 
-  const replaceToEdit = () => {
-    container.replaceChild(editEventComponent.element, eventComponent.element);
+  const replaceToNormal = () => {
+    replace(container, eventComponent, editEventComponent);
   };
 
-  const replaceToNormal = () => {
-    container.replaceChild(eventComponent.element, editEventComponent.element);
+  const replaceToEdit = () => {
+    replace(container, editEventComponent, eventComponent);
   };
 
   const onEscKeyDown = (evt) => {
@@ -68,21 +68,21 @@ const renderEvent = (container, event) => {
     replaceToNormal();
   });
 
-  render(container, eventComponent.element, RenderPosition.BEFOREEND);
+  render(container, eventComponent, RenderPosition.BEFOREEND);
 };
 
 const renderEvents = (container) => {
   if (events.length) {
     const eventsList = new EventListComponent();
 
-    render(container, new EventSorterComponent().element, RenderPosition.BEFOREEND);
-    render(container, eventsList.element, RenderPosition.BEFOREEND);
+    render(container, new EventSorterComponent(), RenderPosition.BEFOREEND);
+    render(container, eventsList, RenderPosition.BEFOREEND);
 
     for (let i = 0; i < EVENTS_AMOUNT; i++) {
-      renderEvent(eventsList.element, events[i]);
+      renderEvent(eventsList, events[i]);
     }
   } else {
-    render(container, new noEventsCompontent().element, RenderPosition.BEFOREEND);
+    render(container, new noEventsCompontent(), RenderPosition.BEFOREEND);
   }
 };
 

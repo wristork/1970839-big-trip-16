@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { getFormattedDate } from '../utils';
+import { getFormattedDate } from '../utils/date';
 import AbstractView from './abstract-view';
 
 const isSameMonth = (dateA, dateB) => {
