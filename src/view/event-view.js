@@ -1,6 +1,8 @@
 import dayjs from 'dayjs';
-import { getFormattedDate } from '../utils';
+
 import AbstractView from './abstract-view';
+
+import { getFormattedDate } from '../utils';
 
 const getEventDuration = (startDate, endDate) => {
   startDate = dayjs(startDate);
@@ -98,6 +100,7 @@ const createEventTemplate = (event = {}) => {
 
 export default class EventComponent extends AbstractView {
   #events = null;
+  #callbacks = {};
 
   constructor(events) {
     super();
@@ -107,5 +110,23 @@ export default class EventComponent extends AbstractView {
 
   get template() {
     return createEventTemplate(this.#events);
+  }
+
+  addEditStateClickHandler(cb) {
+    if (this.#callbacks['click'] === undefined) {
+      this.#callbacks['click'] = cb;
+    }
+
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#clickEditButtonHandler);
+  }
+
+  removeElement() {
+    super.removeElement();
+
+    this.#callbacks = {};
+  }
+
+  #clickEditButtonHandler = () => {
+    this.#callbacks['click']();
   }
 }

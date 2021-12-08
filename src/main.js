@@ -50,19 +50,19 @@ const renderEvent = (container, event) => {
     }
   };
 
-  eventComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+  eventComponent.addEditStateClickHandler(() => {
     replaceToEdit();
 
     document.addEventListener('keydown', onEscKeyDown);
   });
 
-  editEventComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+  editEventComponent.addNormalStateClickHandler(() => {
     replaceToNormal();
 
     document.removeEventListener('keydown', onEscKeyDown);
   });
 
-  editEventComponent.element.querySelector('form').addEventListener('submit', (evt) => {
+  editEventComponent.addFormSubmitHandler((evt) => {
     evt.preventDefault();
 
     replaceToNormal();

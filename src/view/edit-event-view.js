@@ -1,12 +1,12 @@
 import dayjs from 'dayjs';
 
+import AbstractView from './abstract-view';
+import DetailsComponent from './event-details-view';
+
 import { ROUTES, DESTINATIONS } from '../const';
 import { generateDescription, generateImages } from '../mock/destination';
 import { generateOffers } from '../mock/offers';
 import { getFormattedDate } from '../utils';
-
-import AbstractView from './abstract-view';
-import DetailsComponent from './event-details-view';
 
 const createRoutesTemplate = () => {
   const routes = ROUTES;
@@ -127,6 +127,7 @@ const BLANK_EVENT = {
 
 export default class EditEventComponent extends AbstractView {
   #event = null;
+  #callbacks = {};
 
   constructor(event = BLANK_EVENT) {
     super();
@@ -137,4 +138,34 @@ export default class EditEventComponent extends AbstractView {
   get template() {
     return createEditEventTemplate(this.#event);
   }
+
+  addNormalStateClickHandler(cb) {
+    if (this.#callbacks['click'] === undefined) {
+      this.#callbacks['click'] = cb;
+    }
+
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#clickToNormalFormHandler);
+  }
+
+  addFormSubmitHandler(cb) {
+    if (this.#callbacks['submit'] === undefined) {
+      this.#callbacks['submit'] = cb;
+    }
+
+    this.element.querySelector('form').addEventListener('submit', this.#submitFormHandler);
+  }
+
+  removeElement() {
+    super.removeElement();
+
+    this.#callbacks = {};
+  }
+
+  #clickToNormalFormHandler = () => {
+    this.#callbacks['click']();
+  }
+
+  #submitFormHandler = (evt) => {
+    this.#callbacks['submit'](evt);
+  };
 }
