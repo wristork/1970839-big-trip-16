@@ -1,4 +1,4 @@
-import { createElement } from '../render';
+import AbstractView from './abstract-view';
 
 import DestinationComponent from './destination-view';
 import OffersComponent from './offers-view';
@@ -17,29 +17,18 @@ const createDetailsTemplate = (offers, destination) => {
   </section>`;
 };
 
-export default class DetailsComponent {
-  #element = null;
+export default class DetailsComponent extends AbstractView {
   #offers = null;
   #destination = null;
 
   constructor(offers, destination) {
+    super();
+
     this.#offers = offers;
     this.#destination = destination;
   }
 
-  get element() {
-    if (this.#element === null) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
   get template() {
     return createDetailsTemplate(this.#offers, this.#destination);
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

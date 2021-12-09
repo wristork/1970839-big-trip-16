@@ -1,4 +1,4 @@
-import { createElement } from '../render';
+import AbstractView from './abstract-view';
 
 const createOffersTemplate = (offers) => (
   Array.from(offers, (offer, index) => {
@@ -33,27 +33,16 @@ const createOfferSectionTemplate = (offers) => {
   </section>`;
 };
 
-export default class OffersComponent {
-  #element = null;
+export default class OffersComponent extends AbstractView {
   #offers = null;
 
-  constructor(offer) {
-    this.#offers = offer;
-  }
+  constructor(offers) {
+    super();
 
-  get element() {
-    if (this.#element === null) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
+    this.#offers = offers;
   }
 
   get template() {
     return createOfferSectionTemplate(this.#offers);
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
-import { createElement } from '../render';
-import { getFormattedDate } from '../utils';
+import { getFormattedDate } from '../utils/date';
+import AbstractView from './abstract-view';
 
 const isSameMonth = (dateA, dateB) => {
   const monthA = dayjs(dateA).month();
@@ -61,27 +61,16 @@ const createTripInfoTemplate = (events) => {
   </section>`;
 };
 
-export default class InfoComponent {
-  #element = null;
+export default class InfoComponent extends AbstractView {
   #events = null;
 
   constructor(events) {
+    super();
+
     this.#events = events;
-  }
-
-  get element() {
-    if (this.#element === null) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
     return createTripInfoTemplate(this.#events);
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }
