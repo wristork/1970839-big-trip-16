@@ -37,15 +37,17 @@ const createFilterTemplate = (length) => {
 };
 
 export default class FiltersCompontent extends AbstractView {
-  #eventLength = null;
-
-  constructor(events) {
-    super();
-
-    this.#eventLength = events?.length || 0;
-  }
+  #eventLength = 0;
 
   get template() {
     return createFilterTemplate(this.#eventLength);
+  }
+
+  get eventLength() {
+    return this.#eventLength;
+  }
+
+  set eventLength(value) {
+    this.#eventLength = Math.max(0, value);
   }
 }
