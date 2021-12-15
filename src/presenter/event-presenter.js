@@ -9,47 +9,73 @@ export default class EventPresenter {
   #editEventComponent = null;
   #eventComponent = null;
 
-  constructor(parentElement) {
+  #updateEventData = null;
+
+  constructor(parentElement, updateEventData) {
+    this.#updateEventData = updateEventData;
     this.#parent = parentElement;
   }
 
   init(event) {
     this.#event = event;
 
+    const oldEventComponent = this.#eventComponent;
+
     this.#editEventComponent = new EditEventComponent(event);
     this.#eventComponent = new EventComponent(event);
 
-    this.#setHandlers();
+    if (oldEventComponent === null) {
+      render(this.#parent, this.#eventComponent, RenderPosition.BEFOREEND);
+    } else {
+      this.#replaceFromTo(this.#eventComponent, oldEventComponent);
+    }
 
-    render(this.#parent, this.#eventComponent, RenderPosition.BEFOREEND);
+    this.#setHandlers();
+  }
+
+  get event() {
+    return this.#event;
+  }
+
+  #onFavoriteButtonClick = () => {
+    this.#updateEventData(this);
+  }
+
+  #onEditStateClick = () => {
+    this.#replaceToEdit();
+
+    document.addEventListener('keydown', this.#onEscKeyDown);
+  }
+
+  #onNormalStateClick = () => {
+    this.#replaceToNormal();
+
+    document.removeEventListener('keydown', this.#onEscKeyDown);
+  }
+
+  #onSave = (evt) => {
+    evt.preventDefault();
+
+    this.#replaceToNormal();
   }
 
   #setHandlers = () => {
-    this.#eventComponent.addEditStateClickHandler(() => {
-      this.#replaceToEdit();
+    this.#eventComponent.addEditStateClickHandler(this.#onEditStateClick);
+    this.#eventComponent.addFavoriteButtonClickHandler(this.#onFavoriteButtonClick);
+    this.#editEventComponent.addNormalStateClickHandler(this.#onNormalStateClick);
+    this.#editEventComponent.addFormSubmitHandler(this.#onSave);
+  }
 
-      document.addEventListener('keydown', this.#onEscKeyDown);
-    });
-
-    this.#editEventComponent.addNormalStateClickHandler(() => {
-      this.#replaceToNormal();
-
-      document.removeEventListener('keydown', this.#onEscKeyDown);
-    });
-
-    this.#editEventComponent.addFormSubmitHandler((evt) => {
-      evt.preventDefault();
-
-      this.#replaceToNormal();
-    });
+  #replaceFromTo = (a, b) => {
+    replace(this.#parent, a, b);
   }
 
   #replaceToNormal = () => {
-    replace(this.#parent, this.#eventComponent, this.#editEventComponent);
+    this.#replaceFromTo(this.#eventComponent, this.#editEventComponent);
   }
 
   #replaceToEdit = () => {
-    replace(this.#parent, this.#editEventComponent, this.#eventComponent);
+    this.#replaceFromTo(this.#editEventComponent, this.#eventComponent);
   }
 
   #onEscKeyDown = (evt) => {

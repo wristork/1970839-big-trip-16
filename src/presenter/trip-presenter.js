@@ -47,11 +47,22 @@ export default class TripPresenter {
       render(container, this.#eventListComponent, RenderPosition.BEFOREEND);
 
       for (let i = 0; i < this.#events.length; i++) {
-        const event = new EventPresenter(this.#eventListComponent);
+        const event = new EventPresenter(this.#eventListComponent, this.#onEventUpdate);
+
         event.init(this.#events[i]);
       }
     } else {
       render(container, new noEventsCompontent(), RenderPosition.BEFOREEND);
     }
+  }
+
+  #onEventUpdate = (eventPresenter) => {
+    const event = eventPresenter?.event;
+
+    if (event) {
+      event.isFavorite = !event.isFavorite;
+    }
+
+    eventPresenter.init(event);
   }
 }
