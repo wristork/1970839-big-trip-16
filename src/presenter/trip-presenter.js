@@ -20,6 +20,15 @@ export default class TripPresenter {
   #eventSorterComponent = new EventSorterComponent();
 
   #events = [];
+  #eventPresenter = new Set();
+
+  #controlsContainer = null;
+  #eventListContainer = null;
+
+  constructor(option) {
+    this.#controlsContainer = option?.controls || null;
+    this.#eventListContainer = option?.eventList || null;
+  }
 
   init(events) {
     this.#events = [...events];
@@ -28,8 +37,8 @@ export default class TripPresenter {
     this.#filtersComponent.eventLength = this.#events.length;
   }
 
-  renderTripControls(container) {
-    render(container, this.#controlsMainComponent, RenderPosition.AFTERBEGIN);
+  renderTripControls() {
+    render(this.#controlsContainer, this.#controlsMainComponent, RenderPosition.AFTERBEGIN);
 
     render(this.#controlsMainComponent, this.#siteMenuComponent, RenderPosition.BEFOREEND);
     render(this.#controlsMainComponent, this.#filtersComponent, RenderPosition.BEFOREEND);
@@ -41,22 +50,35 @@ export default class TripPresenter {
     }
   }
 
-  renderEvents(container) {
+  renderEventList() {
     if (this.#events.length) {
-      render(container, this.#eventSorterComponent, RenderPosition.BEFOREEND);
-      render(container, this.#eventListComponent, RenderPosition.BEFOREEND);
+      render(this.#eventListContainer, this.#eventSorterComponent, RenderPosition.BEFOREEND);
+      render(this.#eventListContainer, this.#eventListComponent, RenderPosition.BEFOREEND);
 
-      for (let i = 0; i < this.#events.length; i++) {
-        const event = new EventPresenter(this.#eventListComponent, this.#onEventUpdate);
-
-        event.init(this.#events[i]);
-      }
+      this.#renderEvents();
     } else {
-      render(container, new noEventsCompontent(), RenderPosition.BEFOREEND);
+      render(this.#eventListContainer, new noEventsCompontent(), RenderPosition.BEFOREEND);
     }
   }
 
-  #onEventUpdate = (eventPresenter) => {
+  #renderEvents = () => {
+    for (let i = 0; i < this.#events.length; i++) {
+      const event = new EventPresenter(this.#eventListComponent, this.#onChangeFavorite, this.#onChangeEventMode);
+
+      event.init(this.#events[i]);
+
+      this.#eventPresenter.add(event);
+    }
+  }
+
+  #resetEvents = () => {
+    this.#eventPresenter.forEach((presenter) => {
+      presenter.replaceToNormal();
+      presenter.init(presenter.event);
+    });
+  }
+
+  #onChangeFavorite = (eventPresenter) => {
     const event = eventPresenter?.event;
 
     if (event) {
@@ -65,4 +87,8 @@ export default class TripPresenter {
 
     eventPresenter.init(event);
   }
+
+  #onChangeEventMode = () => {
+    this.#resetEvents();
+  };
 }

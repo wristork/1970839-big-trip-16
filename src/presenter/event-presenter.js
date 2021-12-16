@@ -1,18 +1,22 @@
-import { render, replace, RenderPosition } from '../render';
+import { render, replace, remove, RenderPosition } from '../render';
 
 import EventComponent from '../view/event-view';
 import EditEventComponent from '../view/edit-event-view';
 
 export default class EventPresenter {
+  #changeFavorite = null;
+  #changeToEdit = null;
+
   #parent = null;
+
   #event = null;
   #editEventComponent = null;
   #eventComponent = null;
 
-  #updateEventData = null;
+  constructor(parentElement, changeFavorite, changeViewToEdit) {
+    this.#changeFavorite = changeFavorite;
+    this.#changeToEdit = changeViewToEdit;
 
-  constructor(parentElement, updateEventData) {
-    this.#updateEventData = updateEventData;
     this.#parent = parentElement;
   }
 
@@ -37,18 +41,35 @@ export default class EventPresenter {
     return this.#event;
   }
 
+  replaceToNormal = () => {
+    if (this.#editEventComponent.element.parentElement === this.#parent.element) {
+      this.#replaceFromTo(this.#eventComponent, this.#editEventComponent);
+    }
+  }
+
+  replaceToEdit = () => {
+    this.#changeToEdit();
+
+    this.#replaceFromTo(this.#editEventComponent, this.#eventComponent);
+  }
+
+  destroy() {
+    remove(this.#eventComponent);
+    remove(this.#editEventComponent);
+  }
+
   #onFavoriteButtonClick = () => {
-    this.#updateEventData(this);
+    this.#changeFavorite(this);
   }
 
   #onEditStateClick = () => {
-    this.#replaceToEdit();
+    this.replaceToEdit();
 
     document.addEventListener('keydown', this.#onEscKeyDown);
   }
 
   #onNormalStateClick = () => {
-    this.#replaceToNormal();
+    this.replaceToNormal();
 
     document.removeEventListener('keydown', this.#onEscKeyDown);
   }
@@ -56,7 +77,7 @@ export default class EventPresenter {
   #onSave = (evt) => {
     evt.preventDefault();
 
-    this.#replaceToNormal();
+    this.replaceToNormal();
   }
 
   #setHandlers = () => {
@@ -66,22 +87,14 @@ export default class EventPresenter {
     this.#editEventComponent.addFormSubmitHandler(this.#onSave);
   }
 
-  #replaceFromTo = (a, b) => {
-    replace(this.#parent, a, b);
-  }
-
-  #replaceToNormal = () => {
-    this.#replaceFromTo(this.#eventComponent, this.#editEventComponent);
-  }
-
-  #replaceToEdit = () => {
-    this.#replaceFromTo(this.#editEventComponent, this.#eventComponent);
+  #replaceFromTo = (newChild, oldChild) => {
+    replace(this.#parent, newChild, oldChild);
   }
 
   #onEscKeyDown = (evt) => {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
-      this.#replaceToNormal();
+      this.replaceToNormal();
 
       document.removeEventListener('keydown', this.#onEscKeyDown);
     }
