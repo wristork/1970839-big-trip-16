@@ -4,7 +4,7 @@ import AbstractView from './abstract-view';
 
 import { getFormattedDate } from '../utils/date';
 
-const getEventDuration = (startDate, endDate) => {
+const getFormattedEventDuration = (startDate, endDate) => {
   startDate = dayjs(startDate);
   endDate = dayjs(endDate);
 
@@ -49,7 +49,7 @@ const createEventTemplate = (event = {}) => {
     ? createOffersTemplate(offers.filter((offer) => offer.isChecked))
     : '';
 
-  const duration = getEventDuration(date.start, date.end);
+  const duration = getFormattedEventDuration(date.start, date.end);
 
   const favoriteClassName = isFavorite
     ? 'event__favorite-btn event__favorite-btn--active'
