@@ -37,11 +37,12 @@ const getTripPath = (events) => {
 };
 
 const createTripInfoTemplate = (events) => {
-  const startDate = events[0].date.start;
-  const endDate = events[events.length - 1].date.end;
+  const startDate = events.length ? events[0].date.start : new Date();
+  const endDate = events.length ? events[events.length - 1].date.end : new Date();
 
   const startDateFormatted = getFormattedDate(startDate, 'MMM DD');
-  const endDateFormatted = (isSameMonth(startDate, endDate))
+
+  const endDateFormatted = isSameMonth(startDate, endDate)
     ? getFormattedDate(endDate, 'DD')
     : getFormattedDate(endDate, 'MMM DD');
 
@@ -62,15 +63,17 @@ const createTripInfoTemplate = (events) => {
 };
 
 export default class InfoComponent extends AbstractView {
-  #events = null;
-
-  constructor(events) {
-    super();
-
-    this.#events = events;
-  }
+  #events = [];
 
   get template() {
     return createTripInfoTemplate(this.#events);
+  }
+
+  get events() {
+    return this.#events;
+  }
+
+  set events(value) {
+    this.#events = value;
   }
 }

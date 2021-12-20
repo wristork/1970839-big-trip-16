@@ -99,25 +99,35 @@ const createEventTemplate = (event = {}) => {
 };
 
 export default class EventComponent extends AbstractView {
-  #events = null;
+  #event = null;
   #callbacks = {};
 
-  constructor(events) {
+  constructor(event) {
     super();
 
-    this.#events = events;
+    this.#event = event;
   }
 
   get template() {
-    return createEventTemplate(this.#events);
+    return createEventTemplate(this.#event);
   }
 
   addEditStateClickHandler(cb) {
-    if (this.#callbacks['click'] === undefined) {
-      this.#callbacks['click'] = cb;
-    }
+    this.#callbacks.editButtonClick = cb;
 
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#clickEditButtonHandler);
+    this.element.querySelector('.event__rollup-btn')
+      .addEventListener('click', this.#onEditButtonClick);
+  }
+
+  addFavoriteButtonClickHandler(cb) {
+    this.#callbacks.favotiveButtonClick = cb;
+
+    this.element.querySelector('.event__favorite-btn')
+      .addEventListener('click', this.#onFavoriteButtonClick);
+  }
+
+  destroy() {
+    this.removeElement();
   }
 
   removeElement() {
@@ -126,7 +136,11 @@ export default class EventComponent extends AbstractView {
     this.#callbacks = {};
   }
 
-  #clickEditButtonHandler = () => {
-    this.#callbacks['click']();
+  #onEditButtonClick = () => {
+    this.#callbacks.editButtonClick();
+  }
+
+  #onFavoriteButtonClick = () => {
+    this.#callbacks.favotiveButtonClick();
   }
 }
