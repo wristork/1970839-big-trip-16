@@ -28,7 +28,35 @@ const createEventSorterTemplate = () => (`<form class="trip-events__trip-sort  t
 </form>`);
 
 export default class EventSorterComponent extends AbstractView {
+  #callbacks = {};
+
   get template() {
     return createEventSorterTemplate();
+  }
+
+  addChangeSortTypeHandler(cb) {
+    this.#callbacks.sortType = cb;
+    this.element.addEventListener('click', this.#onChangeSortType);
+  }
+
+  #onChangeSortType = ({target}) => {
+    if (target.tagName !== 'INPUT' || target.hasAttribute('checked')) {
+      return;
+    }
+
+    this.#resetCheckedInput();
+    target.setAttribute('checked', '');
+
+    const sortType = target.value;
+
+    this.#callbacks.sortType(sortType);
+  }
+
+  #resetCheckedInput = () => {
+    const radioButtons = this.element.querySelectorAll('.trip-sort__item input');
+
+    for (const radioButton of radioButtons) {
+      radioButton.removeAttribute('checked');
+    }
   }
 }
