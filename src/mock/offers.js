@@ -2,12 +2,10 @@ import { ROUTES, OFFERS } from '../const';
 import { getRandomInteger } from '../utils/common';
 
 const generateOffer = () => {
-  const offers = OFFERS;
-
   const min = 0;
-  const max = offers.length - 1;
+  const max = OFFERS.length - 1;
 
-  const offer = offers[getRandomInteger(min, max)];
+  const offer = OFFERS[getRandomInteger(min, max)];
 
   return {
     name: offer.name,

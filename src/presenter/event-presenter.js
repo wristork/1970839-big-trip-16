@@ -5,23 +5,23 @@ import EditEventComponent from '../view/edit-event-view';
 
 export default class EventPresenter {
   #changeFavorite = null;
-  #changeToEdit = null;
+  #changeToEditMode = null;
 
   #parent = null;
 
-  #event = null;
+  #sourceEvent = null;
   #editEventComponent = null;
   #eventComponent = null;
 
   constructor(parentElement, changeFavorite, changeViewToEdit) {
     this.#changeFavorite = changeFavorite;
-    this.#changeToEdit = changeViewToEdit;
+    this.#changeToEditMode = changeViewToEdit;
 
     this.#parent = parentElement;
   }
 
   init(event) {
-    this.#event = event;
+    this.#sourceEvent = event;
 
     const oldEventComponent = this.#eventComponent;
 
@@ -38,17 +38,19 @@ export default class EventPresenter {
   }
 
   get event() {
-    return this.#event;
+    return this.#sourceEvent;
   }
 
   replaceToNormal = () => {
     if (this.#editEventComponent.element.parentElement === this.#parent.element) {
+      this.#editEventComponent.resetState(this.event);
+
       this.#replaceFromTo(this.#eventComponent, this.#editEventComponent);
     }
   }
 
   replaceToEdit = () => {
-    this.#changeToEdit();
+    this.#changeToEditMode();
 
     this.#replaceFromTo(this.#editEventComponent, this.#eventComponent);
   }
@@ -74,15 +76,14 @@ export default class EventPresenter {
     document.removeEventListener('keydown', this.#onEscKeyDown);
   }
 
-  #onSave = (evt) => {
-    evt.preventDefault();
-
+  #onSave = () => {
     this.replaceToNormal();
   }
 
   #setHandlers = () => {
     this.#eventComponent.addEditStateClickHandler(this.#onEditStateClick);
     this.#eventComponent.addFavoriteButtonClickHandler(this.#onFavoriteButtonClick);
+
     this.#editEventComponent.addNormalStateClickHandler(this.#onNormalStateClick);
     this.#editEventComponent.addFormSubmitHandler(this.#onSave);
   }
@@ -94,8 +95,8 @@ export default class EventPresenter {
   #onEscKeyDown = (evt) => {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
-      this.replaceToNormal();
 
+      this.replaceToNormal();
       document.removeEventListener('keydown', this.#onEscKeyDown);
     }
   }

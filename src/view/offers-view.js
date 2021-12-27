@@ -11,7 +11,14 @@ const createOffersTemplate = (offers) => (
     const checked = offer.isChecked ? 'checked' : '';
 
     return `<div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${nameId}" type="checkbox" name="event-offer-${name}" ${checked}>
+      <input
+        class="event__offer-checkbox  visually-hidden"
+        id="event-offer-${nameId}"
+        type="checkbox"
+        name="event-offer-${name}"
+        data-index="${index}"
+        ${checked}
+      >
       <label class="event__offer-label" for="event-offer-${nameId}">
         <span class="event__offer-title">${text}</span>
         &plus;&euro;&nbsp;

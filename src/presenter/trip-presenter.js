@@ -81,7 +81,7 @@ export default class TripPresenter {
     }
   }
 
-  #resetEvents = () => {
+  #resetEventMode = () => {
     this.#eventPresenter.forEach((presenter) => {
       presenter.replaceToNormal();
       presenter.init(presenter.event);
@@ -138,6 +138,6 @@ export default class TripPresenter {
   }
 
   #onChangeEventMode = () => {
-    this.#resetEvents();
+    this.#resetEventMode();
   };
 }

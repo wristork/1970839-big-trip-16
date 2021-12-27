@@ -1,44 +1,46 @@
 import dayjs from 'dayjs';
 
-import AbstractView from './abstract-view';
+import SmartView from './smart-view';
 import DetailsComponent from './event-details-view';
 
 import { ROUTES, DESTINATIONS } from '../const';
-import { generateDescription, generateImages } from '../mock/destination';
+import { generateDescription, generateDestination, generateImages } from '../mock/destination';
 import { generateOffers } from '../mock/offers';
 import { getFormattedDate } from '../utils/date';
 
-const createRoutesTemplate = () => {
-  const routes = ROUTES;
-
-  return Array.from(routes, (route) => {
+const createRoutesTemplate = () => (
+  Array.from(ROUTES, (route) => {
     const routeLower = route.toLowerCase();
 
     return `<div class="event__type-item">
       <input id="event-type-${routeLower}-1"
         class="event__type-input  visually-hidden"
         type="radio" name="event-type"
-        value="${routeLower}">
+        value="${route}">
       <label class="event__type-label  event__type-label--${routeLower}" for="event-type-${routeLower}-1">${route}</label>
     </div>`;
-  }).join('');
-};
+  }).join('')
+);
 
 const createDestinationOptionsTemplate = (destinations) => (
   Array.from(destinations, (destination) => (`<option value="${destination}"></option>`)).join('')
 );
 
-const createEditEventTemplate = (event) => {
-  const { date, routeType, destination, price, offers } = event;
+const createEditEventTemplate = (data) => {
+  const {
+    date,
+    routeType,
+    destination,
+    price,
+    offers,
+    isHaveDescription,
+    isHaveImages,
+    isHaveOffers
+  } = data;
 
   const iconName = routeType.toLowerCase();
   const routesTemplate = createRoutesTemplate();
-
   const destinationOptionsTemplate = createDestinationOptionsTemplate(DESTINATIONS);
-
-  const isHaveDescription = Boolean(destination.description);
-  const isHaveImages = Boolean(destination.images && destination.images.length);
-  const isHaveOffers = Boolean(offers !== null && offers.length);
 
   const detailsTemplate = (isHaveDescription || isHaveImages || isHaveOffers)
     ? new DetailsComponent(offers, destination).template
@@ -125,18 +127,19 @@ const BLANK_EVENT = {
   offers: generateOffers(ROUTES[0])
 };
 
-export default class EditEventComponent extends AbstractView {
-  #event = null;
+export default class EditEventComponent extends SmartView {
   #callbacks = {};
 
   constructor(event = BLANK_EVENT) {
     super();
 
-    this.#event = event;
+    this._data = EditEventComponent.parseEventToData(event);
+
+    this.#setInnerHandlers();
   }
 
   get template() {
-    return createEditEventTemplate(this.#event);
+    return createEditEventTemplate(this._data);
   }
 
   addNormalStateClickHandler(cb) {
@@ -144,7 +147,7 @@ export default class EditEventComponent extends AbstractView {
       this.#callbacks['click'] = cb;
     }
 
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#clickToNormalFormHandler);
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onClickToChangeViewMode);
   }
 
   addFormSubmitHandler(cb) {
@@ -152,20 +155,148 @@ export default class EditEventComponent extends AbstractView {
       this.#callbacks['submit'] = cb;
     }
 
-    this.element.querySelector('form').addEventListener('submit', this.#submitFormHandler);
+    this.element.querySelector('form').addEventListener('submit', this.#onFormSubmit);
   }
 
   removeElement() {
     super.removeElement();
-
-    this.#callbacks = {};
   }
 
-  #clickToNormalFormHandler = () => {
+  restoreHandlers() {
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onClickToChangeViewMode);
+    this.element.querySelector('form').addEventListener('submit', this.#onFormSubmit);
+
+    this.#setInnerHandlers();
+  }
+
+  resetState(event) {
+    this._data = EditEventComponent.parseEventToData(event);
+
+    this.updateElement();
+  }
+
+  #setInnerHandlers = () => {
+    this.element.querySelector('.event__type-list').addEventListener('click', this.#onChangeEventType);
+    this.element.querySelector('.event__field-group--destination').addEventListener('change', this.#onChangeDestination);
+    this.element.querySelector('.event__input--price').addEventListener('input', this.#onInputPrice);
+
+    const offerContainer = this.element.querySelector('.event__available-offers');
+
+    if (offerContainer) {
+      offerContainer.addEventListener('click', this.#onOfferClick);
+    }
+  }
+
+  #onClickToChangeViewMode = () => {
     this.#callbacks['click']();
   }
 
-  #submitFormHandler = (evt) => {
-    this.#callbacks['submit'](evt);
+  #onFormSubmit = (evt) => {
+    evt.preventDefault();
+
+    this.#callbacks['submit'](EditEventComponent.parseDataToEvent(this._data));
+  };
+
+  #onInputPrice = (evt) => {
+    const { target } = evt;
+
+    if (evt.data && /\D+/.test(evt.data)) {
+      target.value = target.value.slice(0, target.value.length - 1);
+    }
+
+    if (evt.data && target.value.length) {
+      target.value = parseInt(target.value, 10);
+    }
+
+    this.updateData({ price: target.value }, true);
+  };
+
+  #onChangeDestination = (evt) => {
+    const { target } = evt;
+
+    if (target.tagName !== 'INPUT') {
+      return;
+    }
+
+    if (!~DESTINATIONS.indexOf(target.value)) {
+      target.value = '';
+      target.style.outlineColor = 'red';
+      target.style.border = '1px solid orangered';
+    } else {
+      target.style = null;
+
+      this.updateData({ destination: generateDestination(target.value) });
+    }
+  };
+
+  #onChangeEventType = (evt) => {
+    const { target } = evt;
+
+    if (target.tagName !== 'INPUT') {
+      return;
+    }
+
+    const offers = generateOffers(target.value);
+    offers.forEach((offer) => {
+      offer.isChecked = false;
+    });
+
+    this.updateData({
+      routeType: target.value,
+      offers: offers
+    });
+
+    if (typeof this.#callbacks.clickEventType === 'function') {
+      this.#callbacks.clickEventType();
+    }
+  };
+
+  #onOfferClick = (evt) => {
+    const { target } = evt;
+
+    if (target.tagName !== 'INPUT') {
+      return;
+    }
+
+    if (target.hasAttribute('checked')) {
+      target.removeAttribute('checked');
+    } else {
+      target.setAttribute('checked', '');
+    }
+
+    const offers = [...this._data.offers];
+    offers[target.dataset.index].isChecked = target.checked;
+
+    this.updateData({offers}, true);
+  }
+
+  static parseEventToData = (event) => ({
+    ...event,
+    offers: [...event.offers].map((offer) => ({...offer})),
+    isHaveDescription: Boolean(event.destination.description),
+    isHaveImages: Boolean(event.destination.images && event.destination.images.length),
+    isHaveOffers: Boolean(event.offers !== null && event.offers.length)
+  });
+
+  static parseDataToEvent = (data) => {
+    const event = {...data};
+
+    if (!event.isHaveDescription) {
+      event.destination.description = null;
+    }
+
+    if (!event.isHaveImages) {
+      event.destination.images = null;
+    }
+
+    if (!event.isHaveOffers) {
+      event.offers = null;
+    }
+
+    delete event.isHaveDescription;
+    delete event.isHaveImages;
+    delete event.isHaveOffers;
+
+    return event;
   };
 }

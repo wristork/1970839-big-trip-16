@@ -7,14 +7,13 @@ import { generateDate } from './date';
 
 export const generateEvent = () => {
   const routeType = generateRoute();
-  const isHaveOffer = Boolean(getRandomInteger(0, 1));
 
   return ({
     date: generateDate(),
     routeType,
     destination: generateDestination(),
     price: generatePrice(),
-    offers: isHaveOffer ? generateOffers(routeType) : null,
+    offers: generateOffers(routeType),
     isFavorite: Boolean(getRandomInteger(0, 1)),
   });
 };

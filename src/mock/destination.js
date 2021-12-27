@@ -29,22 +29,24 @@ export const generateImages = () => {
   return Array.from({length}, () => `${path}${getRandomInteger(1, 99)}`);
 };
 
-export const generateDestination = () => {
-  const destinations = DESTINATIONS;
+const createDestinationInfo = () => (
+  new Map([...DESTINATIONS].map((destination) => {
+    const isHaveDescription = Boolean(getRandomInteger(0, 1));
+    const isHaveImages = Boolean(getRandomInteger(0, 1));
 
-  const min = 0;
-  const max = destinations.length - 1;
+    return ([
+      destination,
+      {
+        place: destination,
+        description: isHaveDescription ? generateDescription() : '',
+        images: isHaveImages ? generateImages() : null
+      }
+    ]);
+  }))
+);
 
-  const isHaveDescription = Boolean(getRandomInteger(0, 1));
-  const isHaveImages = Boolean(getRandomInteger(0, 1));
+const getRandomDestination = () => DESTINATIONS[getRandomInteger(0, DESTINATIONS.length - 1)];
 
-  const place = destinations[getRandomInteger(min, max)];
-  const description = isHaveDescription ? generateDescription() : '';
-  const images = isHaveImages ? generateImages() : null;
+const destinationInfo = createDestinationInfo();
 
-  return {
-    place,
-    description,
-    images
-  };
-};
+export const generateDestination = (destination = getRandomDestination()) => destinationInfo.get(destination);
