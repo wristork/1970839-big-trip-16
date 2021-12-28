@@ -183,7 +183,7 @@ export default class EditEventComponent extends SmartView {
 
   setDatePicker() {
     this.#initDatePicker();
-  };
+  }
 
   removeDatePicker() {
     this.#startDatePicker.destroy();
@@ -200,7 +200,7 @@ export default class EditEventComponent extends SmartView {
     const commonConfig = {
       dateFormat: 'd/m/Y H:i',
       enableTime: true,
-      time_24hr: true
+      ['time_24hr']: true
     };
 
     this.#startDatePicker = flatpickr(startDatePicker, {...commonConfig,
