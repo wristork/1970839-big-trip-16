@@ -1,4 +1,8 @@
 import dayjs from 'dayjs';
+import flatpickr from 'flatpickr';
+
+import '../../node_modules/flatpickr/dist/flatpickr.min.css';
+import '../../node_modules/flatpickr/dist/themes/material_blue.css';
 
 import SmartView from './smart-view';
 import DetailsComponent from './event-details-view';
@@ -129,6 +133,8 @@ const BLANK_EVENT = {
 
 export default class EditEventComponent extends SmartView {
   #callbacks = {};
+  #startDatePicker = null;
+  #endDatePicker = null;
 
   constructor(event = BLANK_EVENT) {
     super();
@@ -173,6 +179,50 @@ export default class EditEventComponent extends SmartView {
     this._data = EditEventComponent.parseEventToData(event);
 
     this.updateElement();
+  }
+
+  setDatePicker() {
+    this.#initDatePicker();
+  };
+
+  removeDatePicker() {
+    this.#startDatePicker.destroy();
+    this.#endDatePicker.destroy();
+
+    this.#startDatePicker = null;
+    this.#endDatePicker = null;
+  }
+
+  #initDatePicker = () => {
+    const startDatePicker = this.element.querySelector('#event-start-time-1');
+    const endDatePicker = this.element.querySelector('#event-end-time-1');
+
+    const commonConfig = {
+      dateFormat: 'd/m/Y H:i',
+      enableTime: true,
+      time_24hr: true
+    };
+
+    this.#startDatePicker = flatpickr(startDatePicker, {...commonConfig,
+      onChange: (selectedDates) => {
+        this.updateData({date: {
+          start: selectedDates[0],
+          end: this._data.date.end
+        }}, true);
+
+        this.#endDatePicker.set('minDate', selectedDates[0]);
+      }
+    });
+
+    this.#endDatePicker = flatpickr(endDatePicker, {...commonConfig,
+      minDate: this._data.date.start,
+      onChange: (selectedDates) => {
+        this.updateData({date: {
+          start: this._data.date.start,
+          end: selectedDates[0]
+        }}, true);
+      }
+    });
   }
 
   #setInnerHandlers = () => {
