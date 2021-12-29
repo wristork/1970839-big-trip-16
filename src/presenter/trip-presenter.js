@@ -21,28 +21,31 @@ export default class TripPresenter {
   #siteMenuComponent = new SiteMenuComponent();
   #filtersComponent = new FiltersCompontent();
   #infoComponent = new InfoComponent();
-
   #eventListComponent = new EventListComponent();
   #eventSorterComponent = new EventSorterComponent();
-
-  #events = [];
-  #eventPresenter = new Set();
 
   #controlsElement = null;
   #eventListElement = null;
 
+  #eventsModel = null;
+  #eventPresenter = new Set();
+
   constructor(option) {
     this.#controlsElement = option?.controls || null;
     this.#eventListElement = option?.eventList || null;
+
+    this.#eventsModel = option?.eventsModel || null;
   }
 
-  init(events) {
-    this.#events = [...events];
+  get events() {
+    return this.#eventsModel.events;
+  }
 
+  init() {
     this.#sortByDay();
 
-    this.#infoComponent.events = this.#events;
-    this.#filtersComponent.eventLength = this.#events.length;
+    this.#infoComponent.events = this.events;
+    this.#filtersComponent.eventLength = this.events.length;
   }
 
   renderTripControls() {
@@ -53,29 +56,29 @@ export default class TripPresenter {
   }
 
   renderTripInfo() {
-    if (this.#events.length) {
+    if (this.events.length) {
       render(this.#controlsMainComponent, this.#infoComponent, RenderPosition.BEFOREBEGIN);
     }
   }
 
   renderEventList() {
-    if (this.#events.length) {
+    if (this.events.length) {
       render(this.#eventListElement, this.#eventSorterComponent, RenderPosition.BEFOREEND);
       render(this.#eventListElement, this.#eventListComponent, RenderPosition.BEFOREEND);
 
       this.#eventSorterComponent.addChangeSortTypeHandler(this.#onSortEvent);
 
-      this.#renderEvents();
+      this.#renderEvents(this.events);
     } else {
       render(this.#eventListElement, new noEventsCompontent(), RenderPosition.BEFOREEND);
     }
   }
 
-  #renderEvents = () => {
-    for (let i = 0; i < this.#events.length; i++) {
+  #renderEvents = (events) => {
+    for (let i = 0; i < events.length; i++) {
       const event = new EventPresenter(this.#eventListComponent, this.#onChangeFavorite, this.#onChangeEventMode);
 
-      event.init(this.#events[i]);
+      event.init(events[i]);
 
       this.#eventPresenter.add(event);
     }
@@ -88,7 +91,7 @@ export default class TripPresenter {
     });
   }
 
-  #clearEvent = () => {
+  #clearEvents = () => {
     this.#eventPresenter.forEach((presenter) => {
       presenter.destroy();
     });
@@ -109,10 +112,8 @@ export default class TripPresenter {
   };
 
   #sortEvent = (callback) => {
-    this.#events.sort(callback);
-
-    this.#clearEvent();
-    this.#renderEvents();
+    this.#clearEvents();
+    this.#renderEvents([...this.events].sort(callback));
   }
 
   #sortByDay = () => {
