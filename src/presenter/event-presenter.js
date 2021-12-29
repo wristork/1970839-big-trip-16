@@ -44,6 +44,7 @@ export default class EventPresenter {
   replaceToNormal = () => {
     if (this.#editEventComponent.element.parentElement === this.#parent.element) {
       this.#editEventComponent.resetState(this.event);
+      this.#editEventComponent.removeDatePicker();
 
       this.#replaceFromTo(this.#eventComponent, this.#editEventComponent);
     }
@@ -51,6 +52,7 @@ export default class EventPresenter {
 
   replaceToEdit = () => {
     this.#changeToEditMode();
+    this.#editEventComponent.setDatePicker();
 
     this.#replaceFromTo(this.#editEventComponent, this.#eventComponent);
   }
