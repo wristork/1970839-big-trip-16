@@ -149,16 +149,16 @@ export default class EditEventComponent extends SmartView {
   }
 
   addNormalStateClickHandler(cb) {
-    if (this.#callbacks['click'] === undefined) {
-      this.#callbacks['click'] = cb;
+    if (this.#callbacks.changeStateToNormal === undefined) {
+      this.#callbacks.changeStateToNormal = cb;
     }
 
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onClickToChangeViewMode);
   }
 
   addFormSubmitHandler(cb) {
-    if (this.#callbacks['submit'] === undefined) {
-      this.#callbacks['submit'] = cb;
+    if (this.#callbacks.formSubmit === undefined) {
+      this.#callbacks.formSubmit = cb;
     }
 
     this.element.querySelector('form').addEventListener('submit', this.#onFormSubmit);
@@ -238,13 +238,13 @@ export default class EditEventComponent extends SmartView {
   }
 
   #onClickToChangeViewMode = () => {
-    this.#callbacks['click']();
+    this.#callbacks.changeStateToNormal();
   }
 
   #onFormSubmit = (evt) => {
     evt.preventDefault();
 
-    this.#callbacks['submit'](EditEventComponent.parseDataToEvent(this._data));
+    this.#callbacks.formSubmit(EditEventComponent.parseDataToEvent(this._data));
   };
 
   #onInputPrice = (evt) => {

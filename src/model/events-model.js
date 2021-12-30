@@ -1,3 +1,5 @@
+import { UserAction, UpdateType } from "../const";
+
 import AbstractObservable from "../utils/abstract-observable";
 
 export default class EventsModel extends AbstractObservable {
@@ -11,11 +13,27 @@ export default class EventsModel extends AbstractObservable {
     this.#events = new Set(value);
   }
 
-  updateEvent() {
+  addEvent() {
 
   }
 
+  updateEvent(sourceEvent, updatedEvent, updateType) {
+    if (!this.#events.has(sourceEvent)) {
+      throw new Error('This trip event object does not exist in the model');
+    }
+
+    const keysOfUpdatedEvent = Object.keys(updatedEvent);
+
+    for (const key of keysOfUpdatedEvent) {
+      if (key in sourceEvent) {
+        sourceEvent[key] = updatedEvent[key];
+      }
+    }
+
+    this._notify(updateType, sourceEvent);
+  }
+
   deleteEvent() {
-    
+
   }
 }

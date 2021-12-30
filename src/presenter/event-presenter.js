@@ -1,10 +1,12 @@
 import { render, replace, remove, RenderPosition } from '../render';
+import { UserAction, UpdateType } from '../const';
 
 import EventComponent from '../view/event-view';
 import EditEventComponent from '../view/edit-event-view';
 
+
 export default class EventPresenter {
-  #changeFavorite = null;
+  #actionWithData = null;
   #changeToEditMode = null;
 
   #parent = null;
@@ -13,8 +15,8 @@ export default class EventPresenter {
   #editEventComponent = null;
   #eventComponent = null;
 
-  constructor(parentElement, changeFavorite, changeViewToEdit) {
-    this.#changeFavorite = changeFavorite;
+  constructor(parentElement, actionWithData, changeViewToEdit) {
+    this.#actionWithData = actionWithData;
     this.#changeToEditMode = changeViewToEdit;
 
     this.#parent = parentElement;
@@ -63,7 +65,12 @@ export default class EventPresenter {
   }
 
   #onFavoriteButtonClick = () => {
-    this.#changeFavorite(this);
+    this.#actionWithData(
+      UserAction.UPDATE_EVENT,
+      this.event,
+      {...this.event, isFavorite: !this.event.isFavorite},
+      UpdateType.PATCH
+    );
   }
 
   #onEditStateClick = () => {
@@ -78,8 +85,15 @@ export default class EventPresenter {
     document.removeEventListener('keydown', this.#onEscKeyDown);
   }
 
-  #onSave = () => {
+  #onSave = (updatedEvent) => {
     this.replaceToNormal();
+
+    this.#actionWithData(
+      UserAction.UPDATE_EVENT,
+      this.event,
+      updatedEvent,
+      UpdateType.MINOR
+    );
   }
 
   #setHandlers = () => {

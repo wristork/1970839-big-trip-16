@@ -1,4 +1,5 @@
 import { render, RenderPosition } from '../render';
+import { UserAction, UpdateType } from "../const";
 
 import EventSorterComponent from '../view/event-sorter-view';
 import EventListComponent from '../view/event-list-view';
@@ -30,20 +31,31 @@ export default class TripPresenter {
   #eventsModel = null;
   #eventPresenter = new Set();
 
+  #sortType = SortType.DAY;
+
   constructor(option) {
     this.#controlsElement = option?.controls || null;
     this.#eventListElement = option?.eventList || null;
 
     this.#eventsModel = option?.eventsModel || null;
+
+    if (this.#eventsModel) {
+      this.#eventsModel.addObserver(this.#onChangeEventModel);
+    }
   }
 
   get events() {
-    return this.#eventsModel.events;
+    switch(this.#sortType) {
+      case SortType.TIME:
+        return [...this.#eventsModel.events].sort((a, b) => (b.date.end - b.date.start) - (a.date.end - a.date.start));
+      case SortType.PRICE:
+        return [...this.#eventsModel.events].sort((a, b) => b.price - a.price);
+      default:
+        return [...this.#eventsModel.events].sort((a, b) => a.date.start - b.date.start);
+    }
   }
 
   init() {
-    this.#sortByDay();
-
     this.#infoComponent.events = this.events;
     this.#filtersComponent.eventLength = this.events.length;
   }
@@ -76,7 +88,7 @@ export default class TripPresenter {
 
   #renderEvents = (events) => {
     for (let i = 0; i < events.length; i++) {
-      const event = new EventPresenter(this.#eventListComponent, this.#onChangeFavorite, this.#onChangeEventMode);
+      const event = new EventPresenter(this.#eventListComponent, this.#onActionEventView, this.#onChangeEventMode);
 
       event.init(events[i]);
 
@@ -95,50 +107,51 @@ export default class TripPresenter {
     this.#eventPresenter.forEach((presenter) => {
       presenter.destroy();
     });
+
     this.#eventPresenter.clear();
   }
 
   #onSortEvent = (type) => {
-    switch(type) {
-      case SortType.DAY:
-        this.#sortByDay();
-        break;
-      case SortType.PRICE:
-        this.#sortByPrice();
-        break;
-      case SortType.TIME:
-        this.#sortByTime();
-    }
-  };
+    this.#sortType = type;
 
-  #sortEvent = (callback) => {
     this.#clearEvents();
-    this.#renderEvents([...this.events].sort(callback));
-  }
-
-  #sortByDay = () => {
-    this.#sortEvent((a, b) => a.date.start - b.date.start);
-  }
-
-  #sortByPrice = () => {
-    this.#sortEvent((a, b) => b.price - a.price);
+    this.#renderEvents(this.events);
   };
-
-  #sortByTime = () => {
-    this.#sortEvent((a, b) => (b.date.end - b.date.start) - (a.date.end - a.date.start));
-  };
-
-  #onChangeFavorite = (eventPresenter) => {
-    const event = eventPresenter?.event;
-
-    if (event) {
-      event.isFavorite = !event.isFavorite;
-    }
-
-    eventPresenter.init(event);
-  }
 
   #onChangeEventMode = () => {
     this.#resetEventMode();
   };
+
+  #onChangeEventModel = (updateType, event) => {
+    switch(updateType) {
+      case UpdateType.PATCH:
+        this.#eventPresenter.forEach((eventPresenter) => {
+          if (eventPresenter.event === event) {
+            eventPresenter.init(event);
+          }
+        });
+        break;
+      case UpdateType.MINOR:
+        this.#clearEvents();
+        this.#renderEvents(this.events);
+        break;
+      case UpdateType.MAJOR:
+        console.log('Большое обновление');
+        break;
+    }
+  }
+
+  #onActionEventView = (actionType, sourceEvent, updateEvent, updateType) => {
+    switch(actionType) {
+      case UserAction.UPDATE_EVENT:
+        this.#eventsModel.updateEvent(sourceEvent, updateEvent, updateType);
+        break;
+      case UserAction.DELETE_EVENT:
+        // this.#eventsModel.deleteEvent();
+        break;
+      case UserAction.ADD_EVENT:
+        // this.#eventsModel.addEvent();
+        break;
+    }
+  }
 }

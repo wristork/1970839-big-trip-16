@@ -22,3 +22,15 @@ export const OFFERS = [
   {name: 'seats', text: 'Choose seats', price: 5},
   {name: 'train', text: 'Travel by train', price : 40},
 ];
+
+export const UserAction = {
+  UPDATE_EVENT: 'UPDATE_EVENT',
+  DELETE_EVENT: 'DELETE_EVENT',
+  ADD_EVENT: 'ADD_EVENT'
+};
+
+export const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR'
+};
