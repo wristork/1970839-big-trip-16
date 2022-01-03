@@ -1,5 +1,3 @@
-import { UserAction, UpdateType } from "../const";
-
 import AbstractObservable from "../utils/abstract-observable";
 
 export default class EventsModel extends AbstractObservable {

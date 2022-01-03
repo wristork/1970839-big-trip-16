@@ -1,13 +1,10 @@
-import { render, RenderPosition } from '../render';
+import { render, RenderPosition, remove } from '../render';
 import { UserAction, UpdateType } from "../const";
+import { getFilteredEventsByDate } from '../utils/common';
 
 import EventSorterComponent from '../view/event-sorter-view';
 import EventListComponent from '../view/event-list-view';
 import noEventsCompontent from '../view/no-events-view';
-import SiteMenuComponent from '../view/site-menu-view';
-import ControlsMainComponent from '../view/controls-main-view';
-import InfoComponent from '../view/info-view';
-import FiltersCompontent from '../view/filters';
 
 import EventPresenter from './event-presenter';
 
@@ -18,59 +15,50 @@ const SortType = {
 };
 
 export default class TripPresenter {
-  #controlsMainComponent = new ControlsMainComponent();
-  #siteMenuComponent = new SiteMenuComponent();
-  #filtersComponent = new FiltersCompontent();
-  #infoComponent = new InfoComponent();
-  #eventListComponent = new EventListComponent();
-  #eventSorterComponent = new EventSorterComponent();
+  #eventListComponent = null;
+  #eventSorterComponent = null;
+  #noEventsCompontent = null;
 
-  #controlsElement = null;
   #eventListElement = null;
 
   #eventsModel = null;
+  #filterModel = null;
+
   #eventPresenter = new Set();
 
   #sortType = SortType.DAY;
 
-  constructor(option) {
-    this.#controlsElement = option?.controls || null;
-    this.#eventListElement = option?.eventList || null;
-
-    this.#eventsModel = option?.eventsModel || null;
+  constructor(eventListElement, eventsModel, filterModel) {
+    this.#eventListElement = eventListElement;
+    this.#eventsModel = eventsModel;
+    this.#filterModel = filterModel;
 
     if (this.#eventsModel) {
       this.#eventsModel.addObserver(this.#onChangeEventModel);
     }
+
+    if (this.#filterModel) {
+      this.#filterModel.addObserver(this.#onChangeFilter);
+    }
   }
 
   get events() {
+    let events = getFilteredEventsByDate([...this.#eventsModel.events], this.#filterModel.filterType, new Date());
+
     switch(this.#sortType) {
       case SortType.TIME:
-        return [...this.#eventsModel.events].sort((a, b) => (b.date.end - b.date.start) - (a.date.end - a.date.start));
+        return events.sort((a, b) => (b.date.end - b.date.start) - (a.date.end - a.date.start));
       case SortType.PRICE:
-        return [...this.#eventsModel.events].sort((a, b) => b.price - a.price);
+        return events.sort((a, b) => b.price - a.price);
       default:
-        return [...this.#eventsModel.events].sort((a, b) => a.date.start - b.date.start);
+        return events.sort((a, b) => a.date.start - b.date.start);
     }
   }
 
   init() {
-    this.#infoComponent.events = this.events;
-    this.#filtersComponent.eventLength = this.events.length;
-  }
-
-  renderTripControls() {
-    render(this.#controlsElement, this.#controlsMainComponent, RenderPosition.AFTERBEGIN);
-
-    render(this.#controlsMainComponent, this.#siteMenuComponent, RenderPosition.BEFOREEND);
-    render(this.#controlsMainComponent, this.#filtersComponent, RenderPosition.BEFOREEND);
-  }
-
-  renderTripInfo() {
-    if (this.events.length) {
-      render(this.#controlsMainComponent, this.#infoComponent, RenderPosition.BEFOREBEGIN);
-    }
+    this.#eventListComponent = new EventListComponent();
+    this.#eventSorterComponent = new EventSorterComponent();
+    this.#noEventsCompontent = new noEventsCompontent(this.#filterModel.filterType);
   }
 
   renderEventList() {
@@ -82,8 +70,18 @@ export default class TripPresenter {
 
       this.#renderEvents(this.events);
     } else {
-      render(this.#eventListElement, new noEventsCompontent(), RenderPosition.BEFOREEND);
+      render(this.#eventListElement, this.#noEventsCompontent, RenderPosition.BEFOREEND);
     }
+  }
+
+  clearEventList() {
+    this.#clearEvents();
+
+    remove(this.#eventListComponent);
+    remove(this.#eventSorterComponent);
+    remove(this.#noEventsCompontent);
+
+    this.#sortType = SortType.DAY;
   }
 
   #renderEvents = (events) => {
@@ -153,5 +151,11 @@ export default class TripPresenter {
         // this.#eventsModel.addEvent();
         break;
     }
+  }
+
+  #onChangeFilter = () => {
+    this.clearEventList();
+    this.init();
+    this.renderEventList();
   }
 }
