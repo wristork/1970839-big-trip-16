@@ -31,7 +31,13 @@ export default class EventsModel extends AbstractObservable {
     this._notify(updateType, sourceEvent);
   }
 
-  deleteEvent() {
+  deleteEvent(sourceEvent, updateType) {
+    if (!this.#events.has(sourceEvent)) {
+      throw new Error('This trip event object does not exist in the model');
+    }
 
+    this.#events.delete(sourceEvent);
+
+    this._notify(updateType, sourceEvent);
   }
 }

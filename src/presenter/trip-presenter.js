@@ -134,7 +134,8 @@ export default class TripPresenter {
         this.#renderEvents(this.events);
         break;
       case UpdateType.MAJOR:
-        console.log('Большое обновление');
+        this.clearEventList();
+        this.renderEventList();
         break;
     }
   }
@@ -145,7 +146,7 @@ export default class TripPresenter {
         this.#eventsModel.updateEvent(sourceEvent, updateEvent, updateType);
         break;
       case UserAction.DELETE_EVENT:
-        // this.#eventsModel.deleteEvent();
+        this.#eventsModel.deleteEvent(sourceEvent, updateType);
         break;
       case UserAction.ADD_EVENT:
         // this.#eventsModel.addEvent();

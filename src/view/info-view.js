@@ -27,11 +27,13 @@ const calcCost = (events) => {
 
 const getTripPath = (events) => {
   const places = events.map((event) => event.destination.place);
-  const uniquePlaces = new Set(places);
+  const uniquePlaces = Array.from(new Set(places));
 
-  const path = uniquePlaces.size > 3
+  const path = uniquePlaces.length > 3
     ? `${places[0]} &mdash; ... &mdash; ${places[places.length - 1]}`
-    : Array.from(uniquePlaces).join( ' &mdash; ');
+    : uniquePlaces.length === 3
+    ? [...uniquePlaces.slice(0, -1), places[places.length - 1]].join(' &mdash; ')
+    : uniquePlaces.join(' &mdash; ');
 
   return path;
 };

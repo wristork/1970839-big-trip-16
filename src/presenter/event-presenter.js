@@ -92,9 +92,18 @@ export default class EventPresenter {
       UserAction.UPDATE_EVENT,
       this.event,
       updatedEvent,
-      UpdateType.MINOR
+      UpdateType.MAJOR
     );
   }
+
+  #onDelete = () => {
+    this.#actionWithData(
+      UserAction.DELETE_EVENT,
+      this.event,
+      null,
+      UpdateType.MAJOR
+    );
+  };
 
   #setHandlers = () => {
     this.#eventComponent.addEditStateClickHandler(this.#onEditStateClick);
@@ -102,6 +111,7 @@ export default class EventPresenter {
 
     this.#editEventComponent.addNormalStateClickHandler(this.#onNormalStateClick);
     this.#editEventComponent.addFormSubmitHandler(this.#onSave);
+    this.#editEventComponent.addDeleteHandler(this.#onDelete);
   }
 
   #replaceFromTo = (newChild, oldChild) => {

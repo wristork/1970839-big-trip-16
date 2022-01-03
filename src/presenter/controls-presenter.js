@@ -8,10 +8,10 @@ import InfoComponent from '../view/info-view';
 import FiltersCompontent from '../view/filters';
 
 export default class ControlsPresenter {
-  #controlsMainComponent = new ControlsMainComponent();
-  #siteMenuComponent = new SiteMenuComponent();
-  #filtersComponent = new FiltersCompontent();
-  #infoComponent = new InfoComponent();
+  #controlsMainComponent = null;
+  #siteMenuComponent = null;
+  #filtersComponent = null;
+  #infoComponent = null;
 
   #controlsElement = null;
 
@@ -23,6 +23,10 @@ export default class ControlsPresenter {
 
     this.#eventsModel = eventsModel;
     this.#filterModel = filterModel;
+
+    if (this.#eventsModel) {
+      this.#eventsModel.addObserver(this.#onChangeEventModel);
+    }
   }
 
   get events() {
@@ -36,6 +40,11 @@ export default class ControlsPresenter {
   }
 
   init() {
+    this.#controlsMainComponent = new ControlsMainComponent();
+    this.#siteMenuComponent = new SiteMenuComponent();
+    this.#filtersComponent = new FiltersCompontent();
+    this.#infoComponent = new InfoComponent();
+
     this.#infoComponent.events = this.events;
     this.#filtersComponent.eventLength = this.events.length;
 
@@ -55,8 +64,21 @@ export default class ControlsPresenter {
     }
   }
 
+  clearControls() {
+    remove(this.#controlsMainComponent);
+    remove(this.#siteMenuComponent);
+    remove(this.#filtersComponent);
+
+    this.clearInfo();
+  }
+
   clearInfo() {
     remove(this.#infoComponent);
+  }
+
+  redrawInfo() {
+    this.clearInfo();
+    this.renderInfo();
   }
 
   #onFilterTypeChange = (filterType) => {
@@ -64,7 +86,20 @@ export default class ControlsPresenter {
 
     this.#infoComponent.events = this.events;
 
-    this.clearInfo();
-    this.renderInfo();
+    this.redrawInfo();
   };
+
+  #onChangeEventModel = (updateType) => {
+    switch(updateType) {
+      case UpdateType.MINOR:
+        this.redrawInfo();
+        break;
+      case UpdateType.MAJOR:
+        this.clearControls();
+        this.init();
+        this.renderControls();
+        this.renderInfo();
+        break;
+    }
+  }
 }

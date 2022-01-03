@@ -164,6 +164,14 @@ export default class EditEventComponent extends SmartView {
     this.element.querySelector('form').addEventListener('submit', this.#onFormSubmit);
   }
 
+  addDeleteHandler(cb) {
+    if (this.#callbacks.delete === undefined) {
+      this.#callbacks.delete = cb;
+    }
+
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#onDelete);
+  }
+
   removeElement() {
     super.removeElement();
   }
@@ -246,6 +254,12 @@ export default class EditEventComponent extends SmartView {
 
     this.#callbacks.formSubmit(EditEventComponent.parseDataToEvent(this._data));
   };
+
+  #onDelete = () => {
+    if (typeof this.#callbacks.delete === 'function') {
+      this.#callbacks.delete();
+    }
+  }
 
   #onInputPrice = (evt) => {
     const { target } = evt;

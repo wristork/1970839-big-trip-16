@@ -6,7 +6,7 @@ import ControlsPresenter from './presenter/controls-presenter';
 import EventsModel from './model/events-model';
 import FilterModel from './model/filter-model';
 
-const EVENTS_AMOUNT = 20;
+const EVENTS_AMOUNT = 4;
 
 const events = Array.from({length: EVENTS_AMOUNT}, generateEvent);
 

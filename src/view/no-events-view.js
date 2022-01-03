@@ -17,8 +17,6 @@ export default class NoEventsComponent extends AbstractView {
     super();
 
     this.#filterType = filterType;
-
-    console.log(noEventMessages[this.#filterType]);
   }
 
   get template() {
