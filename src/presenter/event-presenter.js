@@ -191,7 +191,10 @@ export default class EventPresenter {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
 
-      this.#destroyNewForm();
+      if (typeof this.#destroyNewForm === 'function') {
+        this.#destroyNewForm();
+      }
+
       this.replaceToNormal();
       document.removeEventListener('keydown', this.#onEscKeyDown);
     }
