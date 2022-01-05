@@ -1,4 +1,5 @@
 import flatpickr from 'flatpickr';
+import he from 'he';
 
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 import '../../node_modules/flatpickr/dist/themes/material_blue.css';
@@ -127,10 +128,13 @@ export default class EditEventComponent extends SmartView {
   #startDatePicker = null;
   #endDatePicker = null;
 
+  #saveButtonElement = null;
+
   constructor(event) {
     super();
 
     this._data = EditEventComponent.parseEventToData(event);
+    this.#saveButtonElement = this.element.querySelector('.event__save-btn');
 
     this.#setInnerHandlers();
   }
@@ -291,8 +295,10 @@ export default class EditEventComponent extends SmartView {
       target.value = '';
       target.style.outlineColor = 'red';
       target.style.border = '1px solid orangered';
+      this.#saveButtonElement.setAttribute('disabled', 'true');
     } else {
       target.style = null;
+      this.#saveButtonElement.removeAttribute('disabled');
 
       this.updateData({ destination: generateDestination(target.value) });
     }
@@ -354,7 +360,8 @@ export default class EditEventComponent extends SmartView {
 
   static parseDataToEvent = (data) => {
     const event = {...data};
-    event.price = Number(event.price);
+    event.price = Number(parseInt(he.encode(String(event.price))));
+    event.destination.place = he.encode(event.destination.place);
 
     if (!event.isHaveDescription) {
       event.destination.description = null;
