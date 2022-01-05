@@ -1,5 +1,5 @@
 import { render, RenderPosition, remove } from '../render';
-import { UserAction, UpdateType } from "../const";
+import { UserAction, UpdateType, FilterTypes } from '../const';
 import { getFilteredEventsByDate } from '../utils/common';
 
 import EventSorterComponent from '../view/event-sorter-view';
@@ -21,6 +21,9 @@ export default class TripPresenter {
 
   #eventListElement = null;
 
+  #newFormButtonElement = null;
+  #newEventForm = null;
+
   #eventsModel = null;
   #filterModel = null;
 
@@ -40,10 +43,13 @@ export default class TripPresenter {
     if (this.#filterModel) {
       this.#filterModel.addObserver(this.#onChangeFilter);
     }
+
+    this.#newFormButtonElement = document.querySelector('.trip-main__event-add-btn');
+    this.#newFormButtonElement.addEventListener('click', this.#onShowNewEventForm);
   }
 
   get events() {
-    let events = getFilteredEventsByDate([...this.#eventsModel.events], this.#filterModel.filterType, new Date());
+    const events = getFilteredEventsByDate([...this.#eventsModel.events], this.#filterModel.filterType, new Date());
 
     switch(this.#sortType) {
       case SortType.TIME:
@@ -59,6 +65,8 @@ export default class TripPresenter {
     this.#eventListComponent = new EventListComponent();
     this.#eventSorterComponent = new EventSorterComponent();
     this.#noEventsCompontent = new noEventsCompontent(this.#filterModel.filterType);
+
+    this.#newEventForm = new EventPresenter(this.#eventListComponent, this.#onActionEventView, this.#onChangeEventMode, this.#destroyNewEventForm);
   }
 
   renderEventList() {
@@ -66,7 +74,7 @@ export default class TripPresenter {
       render(this.#eventListElement, this.#eventSorterComponent, RenderPosition.BEFOREEND);
       render(this.#eventListElement, this.#eventListComponent, RenderPosition.BEFOREEND);
 
-      this.#eventSorterComponent.addChangeSortTypeHandler(this.#onSortEvent);
+      this.#eventSorterComponent.addChangeSortTypeHandler(this.#changeSortEvent);
 
       this.#renderEvents(this.events);
     } else {
@@ -81,7 +89,24 @@ export default class TripPresenter {
     remove(this.#eventSorterComponent);
     remove(this.#noEventsCompontent);
 
+    this.#newFormButtonElement.removeAttribute('disabled');
     this.#sortType = SortType.DAY;
+  }
+
+  #onShowNewEventForm = () => {
+    this.#filterModel.setFilterType(FilterTypes.EVERYTHING, UpdateType.MAJOR);
+    this.#resetSort();
+
+    this.#destroyNewEventForm();
+    this.#newEventForm.init();
+
+    this.#resetEventMode();
+
+    if (this.#newFormButtonElement.hasAttribute('disabled')) {
+      this.#newFormButtonElement.removeAttribute('disabled');
+    } else {
+      this.#newFormButtonElement.setAttribute('disabled', '');
+    }
   }
 
   #renderEvents = (events) => {
@@ -109,7 +134,14 @@ export default class TripPresenter {
     this.#eventPresenter.clear();
   }
 
-  #onSortEvent = (type) => {
+  #resetSort = () => {
+    this.#changeSortEvent(SortType.DAY);
+
+    this.clearEventList();
+    this.renderEventList();
+  }
+
+  #changeSortEvent = (type) => {
     this.#sortType = type;
 
     this.#clearEvents();
@@ -118,7 +150,14 @@ export default class TripPresenter {
 
   #onChangeEventMode = () => {
     this.#resetEventMode();
+
+    this.#destroyNewEventForm();
   };
+
+  #destroyNewEventForm = () => {
+    this.#newEventForm.destroy();
+    this.#newFormButtonElement.removeAttribute('disabled');
+  }
 
   #onChangeEventModel = (updateType, event) => {
     switch(updateType) {
@@ -149,14 +188,13 @@ export default class TripPresenter {
         this.#eventsModel.deleteEvent(sourceEvent, updateType);
         break;
       case UserAction.ADD_EVENT:
-        // this.#eventsModel.addEvent();
+        this.#eventsModel.addEvent(sourceEvent, updateEvent, updateType);
         break;
     }
   }
 
   #onChangeFilter = () => {
     this.clearEventList();
-    this.init();
     this.renderEventList();
   }
 }

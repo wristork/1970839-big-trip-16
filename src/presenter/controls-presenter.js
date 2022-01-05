@@ -1,5 +1,5 @@
 import { render, RenderPosition, remove } from '../render';
-import { UpdateType } from "../const";
+import { UpdateType } from '../const';
 import { getFilteredEventsByDate } from '../utils/common';
 
 import SiteMenuComponent from '../view/site-menu-view';
@@ -25,7 +25,11 @@ export default class ControlsPresenter {
     this.#filterModel = filterModel;
 
     if (this.#eventsModel) {
-      this.#eventsModel.addObserver(this.#onChangeEventModel);
+      this.#eventsModel.addObserver(this.#onChangeModel);
+    }
+
+    if (this.#filterModel) {
+      this.#filterModel.addObserver(this.#onChangeModel);
     }
   }
 
@@ -68,8 +72,6 @@ export default class ControlsPresenter {
     remove(this.#controlsMainComponent);
     remove(this.#siteMenuComponent);
     remove(this.#filtersComponent);
-
-    this.clearInfo();
   }
 
   clearInfo() {
@@ -89,13 +91,14 @@ export default class ControlsPresenter {
     this.redrawInfo();
   };
 
-  #onChangeEventModel = (updateType) => {
+  #onChangeModel = (updateType) => {
     switch(updateType) {
       case UpdateType.MINOR:
         this.redrawInfo();
         break;
       case UpdateType.MAJOR:
         this.clearControls();
+        this.clearInfo();
         this.init();
         this.renderControls();
         this.renderInfo();

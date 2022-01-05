@@ -1,4 +1,4 @@
-import AbstractObservable from "../utils/abstract-observable";
+import AbstractObservable from '../utils/abstract-observable';
 
 export default class EventsModel extends AbstractObservable {
   #events = null;
@@ -11,8 +11,14 @@ export default class EventsModel extends AbstractObservable {
     this.#events = new Set(value);
   }
 
-  addEvent() {
+  addEvent(sourceEvent, event, updateType) {
+    if (this.#events.has(sourceEvent)) {
+      throw new Error('This trip event object already exist');
+    }
 
+    this.#events.add(event);
+
+    this._notify(updateType, event);
   }
 
   updateEvent(sourceEvent, updatedEvent, updateType) {

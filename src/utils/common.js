@@ -1,4 +1,4 @@
-import { FilterTypes } from "../const";
+import { FilterTypes } from '../const';
 
 export const getRandomInteger = (a = 1, b = 0) => {
   const lower = Math.min(a, b);
@@ -10,7 +10,11 @@ export const getFilteredEventsByDate = (events, filterType, relativeDate) => {
   switch(filterType) {
     case FilterTypes.FUTURE:
       events = events.filter((event) => {
-        if (relativeDate - event.date.start <= 0) {
+        const startDate = event.date.start;
+        const endDate = event.date.end;
+
+        if (relativeDate - startDate <= 0 ||
+            relativeDate - startDate >= 0 && relativeDate - endDate < 0) {
           return true;
         }
 
@@ -19,7 +23,11 @@ export const getFilteredEventsByDate = (events, filterType, relativeDate) => {
       break;
     case FilterTypes.PAST:
       events = events.filter((event) => {
-        if (relativeDate - event.date.end > 0) {
+        const startDate = event.date.start;
+        const endDate = event.date.end;
+
+        if (relativeDate - endDate > 0 ||
+            relativeDate - startDate >= 0 && relativeDate - endDate < 0) {
           return true;
         }
 
@@ -29,4 +37,4 @@ export const getFilteredEventsByDate = (events, filterType, relativeDate) => {
   }
 
   return events;
-}
+};
