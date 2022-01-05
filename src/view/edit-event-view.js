@@ -1,5 +1,5 @@
-import dayjs from 'dayjs';
 import flatpickr from 'flatpickr';
+import he from 'he';
 
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 import '../../node_modules/flatpickr/dist/themes/material_blue.css';
@@ -8,8 +8,8 @@ import SmartView from './smart-view';
 import DetailsComponent from './event-details-view';
 
 import { ROUTES, DESTINATIONS } from '../const';
-import { generateDescription, generateDestination, generateImages } from '../mock/destination';
 import { generateOffers } from '../mock/offers';
+import { generateDestination } from '../mock/destination';
 import { getFormattedDate } from '../utils/date';
 
 const createRoutesTemplate = () => (
@@ -39,7 +39,8 @@ const createEditEventTemplate = (data) => {
     offers,
     isHaveDescription,
     isHaveImages,
-    isHaveOffers
+    isHaveOffers,
+    isBlank
   } = data;
 
   const iconName = routeType.toLowerCase();
@@ -49,6 +50,14 @@ const createEditEventTemplate = (data) => {
   const detailsTemplate = (isHaveDescription || isHaveImages || isHaveOffers)
     ? new DetailsComponent(offers, destination).template
     : '';
+
+  const resetButtonText = isBlank ? 'Cancel' : 'Delete';
+
+  const rollupButtonTemplate = isBlank
+    ? ''
+    : `<button class="event__rollup-btn" type="button">
+        <span class="visually-hidden">Open event</span>
+      </button>`;
 
   return `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
@@ -106,29 +115,12 @@ const createEditEventTemplate = (data) => {
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">Delete</button>
-        <button class="event__rollup-btn" type="button">
-          <span class="visually-hidden">Open event</span>
-        </button>
+        <button class="event__reset-btn" type="reset">${resetButtonText}</button>
+        ${rollupButtonTemplate}
       </header>
       ${detailsTemplate}
     </form>
   </li>`;
-};
-
-const BLANK_EVENT = {
-  date: {
-    start: dayjs().toDate(),
-    end: dayjs().add(1, 'day').toDate()
-  },
-  routeType: ROUTES[0],
-  destination:  {
-    place: DESTINATIONS[0],
-    description: generateDescription(),
-    images: generateImages()
-  },
-  price: '',
-  offers: generateOffers(ROUTES[0])
 };
 
 export default class EditEventComponent extends SmartView {
@@ -136,10 +128,13 @@ export default class EditEventComponent extends SmartView {
   #startDatePicker = null;
   #endDatePicker = null;
 
-  constructor(event = BLANK_EVENT) {
+  #saveButtonElement = null;
+
+  constructor(event) {
     super();
 
     this._data = EditEventComponent.parseEventToData(event);
+    this.#saveButtonElement = this.element.querySelector('.event__save-btn');
 
     this.#setInnerHandlers();
   }
@@ -149,19 +144,27 @@ export default class EditEventComponent extends SmartView {
   }
 
   addNormalStateClickHandler(cb) {
-    if (this.#callbacks['click'] === undefined) {
-      this.#callbacks['click'] = cb;
+    if (this.#callbacks.changeStateToNormal === undefined) {
+      this.#callbacks.changeStateToNormal = cb;
     }
 
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onClickToChangeViewMode);
+    this.element.querySelector('.event__rollup-btn')?.addEventListener('click', this.#onClickToChangeViewMode);
   }
 
   addFormSubmitHandler(cb) {
-    if (this.#callbacks['submit'] === undefined) {
-      this.#callbacks['submit'] = cb;
+    if (this.#callbacks.formSubmit === undefined) {
+      this.#callbacks.formSubmit = cb;
     }
 
     this.element.querySelector('form').addEventListener('submit', this.#onFormSubmit);
+  }
+
+  addResetButtonClickHandler(cb) {
+    if (this.#callbacks.resetButtonClick === undefined) {
+      this.#callbacks.resetButtonClick = cb;
+    }
+
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#onClickResetButton);
   }
 
   removeElement() {
@@ -169,7 +172,7 @@ export default class EditEventComponent extends SmartView {
   }
 
   restoreHandlers() {
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onClickToChangeViewMode);
+    this.element.querySelector('.event__rollup-btn')?.addEventListener('click', this.#onClickToChangeViewMode);
     this.element.querySelector('form').addEventListener('submit', this.#onFormSubmit);
 
     this.#setInnerHandlers();
@@ -186,11 +189,15 @@ export default class EditEventComponent extends SmartView {
   }
 
   removeDatePicker() {
-    this.#startDatePicker.destroy();
-    this.#endDatePicker.destroy();
+    if (this.#startDatePicker) {
+      this.#startDatePicker.destroy();
+      this.#startDatePicker = null;
+    }
 
-    this.#startDatePicker = null;
-    this.#endDatePicker = null;
+    if (this.#endDatePicker) {
+      this.#endDatePicker.destroy();
+      this.#endDatePicker = null;
+    }
   }
 
   #initDatePicker = () => {
@@ -205,10 +212,15 @@ export default class EditEventComponent extends SmartView {
 
     this.#startDatePicker = flatpickr(startDatePicker, {...commonConfig,
       onChange: (selectedDates) => {
-        this.updateData({date: {
-          start: selectedDates[0],
-          end: this._data.date.end
-        }}, true);
+        this.updateData(
+          {
+            date: {
+              start: selectedDates[0],
+              end: this._data.date.end
+            }
+          },
+          true
+        );
 
         this.#endDatePicker.set('minDate', selectedDates[0]);
       }
@@ -217,10 +229,15 @@ export default class EditEventComponent extends SmartView {
     this.#endDatePicker = flatpickr(endDatePicker, {...commonConfig,
       minDate: this._data.date.start,
       onChange: (selectedDates) => {
-        this.updateData({date: {
-          start: this._data.date.start,
-          end: selectedDates[0]
-        }}, true);
+        this.updateData(
+          {
+            date: {
+              start: this._data.date.start,
+              end: selectedDates[0]
+            }
+          },
+          true
+        );
       }
     });
   }
@@ -238,14 +255,20 @@ export default class EditEventComponent extends SmartView {
   }
 
   #onClickToChangeViewMode = () => {
-    this.#callbacks['click']();
+    this.#callbacks.changeStateToNormal();
   }
 
   #onFormSubmit = (evt) => {
     evt.preventDefault();
 
-    this.#callbacks['submit'](EditEventComponent.parseDataToEvent(this._data));
+    this.#callbacks.formSubmit(EditEventComponent.parseDataToEvent(this._data));
   };
+
+  #onClickResetButton = () => {
+    if (typeof this.#callbacks.resetButtonClick === 'function') {
+      this.#callbacks.resetButtonClick();
+    }
+  }
 
   #onInputPrice = (evt) => {
     const { target } = evt;
@@ -272,8 +295,10 @@ export default class EditEventComponent extends SmartView {
       target.value = '';
       target.style.outlineColor = 'red';
       target.style.border = '1px solid orangered';
+      this.#saveButtonElement.setAttribute('disabled', 'true');
     } else {
       target.style = null;
+      this.#saveButtonElement.removeAttribute('disabled');
 
       this.updateData({ destination: generateDestination(target.value) });
     }
@@ -320,16 +345,23 @@ export default class EditEventComponent extends SmartView {
     this.updateData({offers}, true);
   }
 
-  static parseEventToData = (event) => ({
-    ...event,
-    offers: [...event.offers].map((offer) => ({...offer})),
-    isHaveDescription: Boolean(event.destination.description),
-    isHaveImages: Boolean(event.destination.images && event.destination.images.length),
-    isHaveOffers: Boolean(event.offers !== null && event.offers.length)
-  });
+  static parseEventToData = (event) => {
+    const offers = event.offers ? [...event.offers].map((offer) => ({...offer})) : event.offers;
+
+    return (
+      {...event,
+        offers: offers,
+        isHaveDescription: Boolean(event.destination.description),
+        isHaveImages: Boolean(event.destination.images && event.destination.images.length),
+        isHaveOffers: Boolean(event.offers !== null && event.offers.length)
+      }
+    );
+  };
 
   static parseDataToEvent = (data) => {
     const event = {...data};
+    event.price = Number(parseInt(he.encode(String(event.price))));
+    event.destination.place = he.encode(event.destination.place);
 
     if (!event.isHaveDescription) {
       event.destination.description = null;
@@ -341,6 +373,10 @@ export default class EditEventComponent extends SmartView {
 
     if (!event.isHaveOffers) {
       event.offers = null;
+    }
+
+    if ('isBlank' in event) {
+      delete event.isBlank;
     }
 
     delete event.isHaveDescription;

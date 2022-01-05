@@ -38,6 +38,7 @@ const createFilterTemplate = (length) => {
 
 export default class FiltersCompontent extends AbstractView {
   #eventLength = 0;
+  #callbacks = {};
 
   get template() {
     return createFilterTemplate(this.#eventLength);
@@ -49,5 +50,23 @@ export default class FiltersCompontent extends AbstractView {
 
   set eventLength(value) {
     this.#eventLength = Math.max(0, value);
+  }
+
+  addChangeFilterHandler(cb) {
+    if (typeof cb === 'function') {
+      this.#callbacks.changeFilter = cb;
+    }
+
+    this.element.querySelector('.trip-filters').addEventListener('click', this.#onChangeFilter);
+  }
+
+  #onChangeFilter = (evt) => {
+    const { target } = evt;
+
+    if (target.tagName !== 'INPUT') {
+      return;
+    }
+
+    this.#callbacks.changeFilter(target.value);
   }
 }

@@ -10,7 +10,7 @@ const isSameMonth = (dateA, dateB) => {
 };
 
 const calcCost = (events) => {
-  const mainCost = events.map((event) => event.price).reduce((acc, value) => acc + value, 0);
+  const mainCost = events.map((event) => event.price).reduce((acc, value) => Number(acc) + Number(value), 0);
 
   const offersCost = events.map((event) => {
     if (event.offers === null) {
@@ -19,19 +19,19 @@ const calcCost = (events) => {
 
     const checkedOffers = event.offers.filter((offer) => offer.isChecked);
 
-    return checkedOffers.map((offer) => offer.price).reduce((acc, value) => acc + value, 0);
-  }).reduce((acc, value) => acc + value, 0);
+    return checkedOffers.map((offer) => offer.price).reduce((acc, value) => Number(acc) + Number(value), 0);
+  }).reduce((acc, value) => Number(acc) + Number(value), 0);
 
   return mainCost + offersCost;
 };
 
 const getTripPath = (events) => {
   const places = events.map((event) => event.destination.place);
-  const uniquePlaces = new Set(places);
+  const uniquePlaces = Array.from(new Set(places));
 
-  const path = uniquePlaces.size > 3
+  const path = uniquePlaces.length > 3
     ? `${places[0]} &mdash; ... &mdash; ${places[places.length - 1]}`
-    : Array.from(uniquePlaces).join( ' &mdash; ');
+    : uniquePlaces.join(' &mdash; ');
 
   return path;
 };

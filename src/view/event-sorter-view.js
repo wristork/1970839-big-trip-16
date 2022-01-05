@@ -35,7 +35,7 @@ export default class EventSorterComponent extends AbstractView {
   }
 
   addChangeSortTypeHandler(cb) {
-    this.#callbacks.sortType = cb;
+    this.#callbacks.changeSortType = cb;
     this.element.addEventListener('click', this.#onChangeSortType);
   }
 
@@ -49,7 +49,7 @@ export default class EventSorterComponent extends AbstractView {
 
     const sortType = target.value;
 
-    this.#callbacks.sortType(sortType);
+    this.#callbacks.changeSortType(sortType);
   }
 
   #resetCheckedInput = () => {
