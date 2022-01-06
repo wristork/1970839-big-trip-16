@@ -42,7 +42,7 @@ tabsElement.addEventListener('click', (evt) => {
     return;
   }
 
-  for (let child of tabsElement.children) {
+  for (const child of tabsElement.children) {
     child.classList.remove('trip-tabs__btn--active');
   }
 

@@ -45,3 +45,9 @@ export const MenuItems = {
   TABLE: 'table',
   STATS: 'stats'
 };
+
+export const StatisticTypes = {
+  TIME: 'time',
+  MONEY: 'money',
+  TYPE: 'type',
+};

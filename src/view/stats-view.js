@@ -1,7 +1,8 @@
-import 'chart.js';
+import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 import { getFormattedEventDuration } from '../utils/date';
+import { StatisticTypes } from '../const';
 
 import AbstractView from './abstract-view';
 
@@ -24,6 +25,7 @@ const createStatsTemplate = () => (
 );
 
 const BAR_HEIGHT = 55;
+const ADD_ROW = 1;
 
 export default class StatsComponent extends AbstractView {
   get template() {
@@ -35,13 +37,9 @@ export default class StatsComponent extends AbstractView {
     const typeChartContext = document.querySelector('#type');
     const timeChartContext = document.querySelector('#time');
 
-    const moneyStats = new Map();
-    const typeStats = new Map();
-    const timeStats = new Map();
-
-    events.forEach((event) => {
-      if (!moneyStats.has(event.routeType)) {
-        moneyStats.set(event.routeType, {
+    const moneyData = this.#getData(events, (event, data) => {
+      if (!data.has(event.routeType)) {
+        data.set(event.routeType, {
           price: 0,
           get value() {
             return this.price;
@@ -49,12 +47,12 @@ export default class StatsComponent extends AbstractView {
         });
       }
 
-      moneyStats.get(event.routeType).price += event.price;
+      data.get(event.routeType).price += event.price;
     });
 
-    events.forEach((event) => {
-      if (!typeStats.has(event.routeType)) {
-        typeStats.set(event.routeType, {
+    const typeData = this.#getData(events, (event, data) => {
+      if (!data.has(event.routeType)) {
+        data.set(event.routeType, {
           count: 0,
           get value() {
             return this.count;
@@ -62,12 +60,12 @@ export default class StatsComponent extends AbstractView {
         });
       }
 
-      typeStats.get(event.routeType).count++;
+      data.get(event.routeType).count++;
     });
 
-    events.forEach((event) => {
-      if (!timeStats.has(event.routeType)) {
-        timeStats.set(event.routeType, {
+    const timeData = this.#getData(events, (event, data) => {
+      if (!data.has(event.routeType)) {
+        data.set(event.routeType, {
           start: event.date.start,
           end: event.date.end,
           get value() {
@@ -75,17 +73,29 @@ export default class StatsComponent extends AbstractView {
           }
         });
       } else {
-        timeStats.get(event.routeType).end = new Date(event.date.end - event.date.start + +timeStats.get(event.routeType).end);
+        data.get(event.routeType).end = new Date(event.date.end - event.date.start + +data.get(event.routeType).end);
       }
     });
 
-    this.#initChart(moneyChartContext, 'MONEY', [...moneyStats], (value) => `€ ${value}`);
-    this.#initChart(typeChartContext, 'TYPE', [...typeStats], (value) => `${value}x`);
-    this.#initChart(timeChartContext, 'TIME', [...timeStats], (date) => getFormattedEventDuration(date.start, date.end));
+    this.#initChart(moneyChartContext, StatisticTypes.MONEY.toUpperCase(), [...moneyData], (value) => `€ ${value}`);
+    this.#initChart(typeChartContext, StatisticTypes.TYPE.toUpperCase(), [...typeData], (value) => `${value}x`);
+    this.#initChart(timeChartContext, StatisticTypes.TIME.toUpperCase(), [...timeData], (date) => getFormattedEventDuration(date.start, date.end));
   }
 
+  #getData = (events, callback) => {
+    const data = new Map();
+
+    events.forEach((event) => {
+      callback(event, data);
+    });
+
+    return data;
+  };
+
   #initChart = (container, title, data, formatterCallback) => {
-    container.height = BAR_HEIGHT * (data.length + 1);
+    const heightFactor = data.length + ADD_ROW;
+
+    container.height = BAR_HEIGHT * heightFactor;
     data.sort((a, b) => b[1].value - a[1].value);
 
     return new Chart(container, {
@@ -115,7 +125,7 @@ export default class StatsComponent extends AbstractView {
             formatter: (value, context) => {
               let output;
 
-              if (title === 'TIME') {
+              if (title.toUpperCase() === StatisticTypes.TIME.toUpperCase()) {
                 output = formatterCallback(data[context.dataIndex][1]);
               } else {
                 output = formatterCallback(value);
