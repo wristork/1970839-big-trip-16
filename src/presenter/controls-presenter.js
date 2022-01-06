@@ -1,15 +1,15 @@
 import { render, RenderPosition, remove } from '../render';
-import { UpdateType } from '../const';
+import { UpdateType, FilterTypes } from '../const';
 import { getFilteredEventsByDate } from '../utils/common';
 
-import SiteMenuComponent from '../view/site-menu-view';
-import ControlsMainComponent from '../view/controls-main-view';
+// import SiteMenuComponent from '../view/site-menu-view';
+// import ControlsMainComponent from '../view/controls-main-view';
 import InfoComponent from '../view/info-view';
 import FiltersCompontent from '../view/filters';
 
 export default class ControlsPresenter {
-  #controlsMainComponent = null;
-  #siteMenuComponent = null;
+  // #controlsMainComponent = null;
+  // #siteMenuComponent = null;
   #filtersComponent = null;
   #infoComponent = null;
 
@@ -44,33 +44,36 @@ export default class ControlsPresenter {
   }
 
   init() {
-    this.#controlsMainComponent = new ControlsMainComponent();
-    this.#siteMenuComponent = new SiteMenuComponent();
+    // this.#controlsMainComponent = new ControlsMainComponent();
+    // this.#siteMenuComponent = new SiteMenuComponent();
     this.#filtersComponent = new FiltersCompontent();
     this.#infoComponent = new InfoComponent();
 
     this.#infoComponent.events = this.events;
     this.#filtersComponent.eventLength = this.events.length;
 
-    this.#filtersComponent.addChangeFilterHandler(this.#onFilterTypeChange);
+    // this.#siteMenuComponent.addClickMenuItemHanlder(() => console.log('inner'));
   }
 
   renderControls() {
-    render(this.#controlsElement, this.#controlsMainComponent, RenderPosition.AFTERBEGIN);
+    // render(this.#controlsElement, this.#controlsMainComponent, RenderPosition.AFTERBEGIN);
 
-    render(this.#controlsMainComponent, this.#siteMenuComponent, RenderPosition.BEFOREEND);
-    render(this.#controlsMainComponent, this.#filtersComponent, RenderPosition.BEFOREEND);
+    // render(this.#controlsMainComponent, this.#siteMenuComponent, RenderPosition.BEFOREEND);
+    render(this.#controlsElement, this.#filtersComponent, RenderPosition.BEFOREEND);
+
+    this.#filtersComponent.addChangeFilterHandler(this.#onFilterTypeChange);
   }
 
   renderInfo() {
     if (this.events.length) {
-      render(this.#controlsMainComponent, this.#infoComponent, RenderPosition.BEFOREBEGIN);
+      render(this.#controlsElement, this.#infoComponent, RenderPosition.BEFOREBEGIN);
     }
   }
 
   clearControls() {
-    remove(this.#controlsMainComponent);
-    remove(this.#siteMenuComponent);
+    // remove(this.#controlsMainComponent);
+    // remove(this.#siteMenuComponent);
+    this.#filterModel.setFilterType(FilterTypes.EVERYTHING);
     remove(this.#filtersComponent);
   }
 

@@ -9,7 +9,25 @@ const createSiteMenuTemplate = () => (`<div class="trip-controls__navigation">
 </div>`);
 
 export default class SiteMenuComponent extends AbstractView {
+  #callbacks = {};
+
   get template() {
     return createSiteMenuTemplate();
+  }
+
+  addClickMenuItemHanlder(cb) {
+    if (this.#callbacks.menuItemClick === undefined) {
+      this.#callbacks.menuItemClick = cb;
+    }
+
+    this.element.querySelector('.trip-tabs').addEventListener('click', this.#onClickMenuItem);
+  }
+
+  #onClickMenuItem = ({ target }) => {
+    if (target.tagName !== 'A') {
+      return;
+    }
+
+    
   }
 }

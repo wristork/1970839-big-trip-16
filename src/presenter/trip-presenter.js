@@ -193,8 +193,10 @@ export default class TripPresenter {
     }
   }
 
-  #onChangeFilter = () => {
-    this.clearEventList();
-    this.renderEventList();
+  #onChangeFilter = (updateType) => {
+    if (updateType) {
+      this.clearEventList();
+      this.renderEventList();
+    }
   }
 }
