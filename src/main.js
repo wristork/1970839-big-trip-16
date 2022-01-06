@@ -61,6 +61,7 @@ tabsElement.addEventListener('click', (evt) => {
       controlsPresenter.clearControls();
 
       render(document.querySelector('.trip-events'), statsComponent, RenderPosition.BEFOREEND);
+      statsComponent.renderStats(eventsModel.events);
       break;
   }
 });
