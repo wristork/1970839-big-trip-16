@@ -360,7 +360,7 @@ export default class EditEventComponent extends SmartView {
 
   static parseDataToEvent = (data) => {
     const event = {...data};
-    event.price = Number(parseInt(he.encode(String(event.price))));
+    event.price = Number(parseInt(he.encode(String(event.price)), 10));
     event.destination.place = he.encode(event.destination.place);
 
     if (!event.isHaveDescription) {

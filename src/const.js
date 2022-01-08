@@ -40,3 +40,15 @@ export const FilterTypes = {
   FUTURE: 'future',
   PAST: 'past'
 };
+
+export const MenuItems = {
+  TABLE: 'table',
+  STATS: 'stats',
+  ADD_NEW: 'new event',
+};
+
+export const StatisticTypes = {
+  TIME: 'time',
+  MONEY: 'money',
+  TYPE: 'type',
+};

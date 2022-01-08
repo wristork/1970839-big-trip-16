@@ -1,5 +1,5 @@
 import { render, RenderPosition, remove } from '../render';
-import { UserAction, UpdateType, FilterTypes } from '../const';
+import { UserAction, UpdateType } from '../const';
 import { getFilteredEventsByDate } from '../utils/common';
 
 import EventSorterComponent from '../view/event-sorter-view';
@@ -21,7 +21,7 @@ export default class TripPresenter {
 
   #eventListElement = null;
 
-  #newFormButtonElement = null;
+  #satellites = null;
   #newEventForm = null;
 
   #eventsModel = null;
@@ -31,8 +31,9 @@ export default class TripPresenter {
 
   #sortType = SortType.DAY;
 
-  constructor(eventListElement, eventsModel, filterModel) {
+  constructor(eventListElement, eventsModel, filterModel, options = {}) {
     this.#eventListElement = eventListElement;
+    this.#satellites = options?.satellites;
     this.#eventsModel = eventsModel;
     this.#filterModel = filterModel;
 
@@ -43,9 +44,6 @@ export default class TripPresenter {
     if (this.#filterModel) {
       this.#filterModel.addObserver(this.#onChangeFilter);
     }
-
-    this.#newFormButtonElement = document.querySelector('.trip-main__event-add-btn');
-    this.#newFormButtonElement.addEventListener('click', this.#onShowNewEventForm);
   }
 
   get events() {
@@ -66,7 +64,7 @@ export default class TripPresenter {
     this.#eventSorterComponent = new EventSorterComponent();
     this.#noEventsCompontent = new noEventsCompontent(this.#filterModel.filterType);
 
-    this.#newEventForm = new EventPresenter(this.#eventListComponent, this.#onActionEventView, this.#onChangeEventMode, this.#destroyNewEventForm);
+    this.#newEventForm = new EventPresenter(this.#eventListComponent, this.#onActionEventView, this.#onChangeEventMode);
   }
 
   renderEventList() {
@@ -89,24 +87,30 @@ export default class TripPresenter {
     remove(this.#eventSorterComponent);
     remove(this.#noEventsCompontent);
 
-    this.#newFormButtonElement.removeAttribute('disabled');
+    this.#satellites.newEventButtonElement.removeAttribute('disabled');
     this.#sortType = SortType.DAY;
   }
 
-  #onShowNewEventForm = () => {
-    this.#filterModel.setFilterType(FilterTypes.EVERYTHING, UpdateType.MAJOR);
-    this.#resetSort();
+  resetSort = () => {
+    this.#changeSortEvent(SortType.DAY);
 
-    this.#destroyNewEventForm();
+    this.clearEventList();
+    this.renderEventList();
+  }
+
+  showCreateForm() {
     this.#newEventForm.init();
+  }
 
-    this.#resetEventMode();
+  closeCreateForm() {
+    this.#newEventForm.destroy();
+  }
 
-    if (this.#newFormButtonElement.hasAttribute('disabled')) {
-      this.#newFormButtonElement.removeAttribute('disabled');
-    } else {
-      this.#newFormButtonElement.setAttribute('disabled', '');
-    }
+  resetEvents = () => {
+    this.#eventPresenter.forEach((presenter) => {
+      presenter.destroy();
+      presenter.init(presenter.event);
+    });
   }
 
   #renderEvents = (events) => {
@@ -119,13 +123,6 @@ export default class TripPresenter {
     }
   }
 
-  #resetEventMode = () => {
-    this.#eventPresenter.forEach((presenter) => {
-      presenter.replaceToNormal();
-      presenter.init(presenter.event);
-    });
-  }
-
   #clearEvents = () => {
     this.#eventPresenter.forEach((presenter) => {
       presenter.destroy();
@@ -134,30 +131,23 @@ export default class TripPresenter {
     this.#eventPresenter.clear();
   }
 
-  #resetSort = () => {
-    this.#changeSortEvent(SortType.DAY);
-
-    this.clearEventList();
-    this.renderEventList();
-  }
-
   #changeSortEvent = (type) => {
     this.#sortType = type;
 
     this.#clearEvents();
     this.#renderEvents(this.events);
+
+    this.#satellites.newEventButtonElement.removeAttribute('disabled');
   };
 
-  #onChangeEventMode = () => {
-    this.#resetEventMode();
+  #onChangeEventMode = (ignoreReset) => {
+    if (!ignoreReset) {
+      this.resetEvents();
+    }
 
-    this.#destroyNewEventForm();
+    this.closeCreateForm();
+    this.#satellites.newEventButtonElement.removeAttribute('disabled');
   };
-
-  #destroyNewEventForm = () => {
-    this.#newEventForm.destroy();
-    this.#newFormButtonElement.removeAttribute('disabled');
-  }
 
   #onChangeEventModel = (updateType, event) => {
     switch(updateType) {
@@ -193,8 +183,10 @@ export default class TripPresenter {
     }
   }
 
-  #onChangeFilter = () => {
-    this.clearEventList();
-    this.renderEventList();
+  #onChangeFilter = (updateType) => {
+    if (updateType) {
+      this.clearEventList();
+      this.renderEventList();
+    }
   }
 }
