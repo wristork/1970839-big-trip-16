@@ -1,5 +1,5 @@
 import { render, RenderPosition, remove } from '../render';
-import { UserAction, UpdateType, FilterTypes } from '../const';
+import { UserAction, UpdateType } from '../const';
 import { getFilteredEventsByDate } from '../utils/common';
 
 import EventSorterComponent from '../view/event-sorter-view';

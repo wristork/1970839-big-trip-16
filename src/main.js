@@ -33,7 +33,7 @@ const resetTabsStates = () => {
   for (const child of tabsElement.children) {
     child.classList.remove('trip-tabs__btn--active');
   }
-}
+};
 
 const changeScreen = (value) => {
   switch(value.toLowerCase()) {
