@@ -43,7 +43,6 @@ export default class ControlsPresenter {
     this.#filtersComponent = new FiltersCompontent();
     this.#infoComponent = new InfoComponent();
 
-    this.#infoComponent.events = this.events;
     this.#filtersComponent.eventLength = this.events.length;
   }
 
@@ -54,6 +53,8 @@ export default class ControlsPresenter {
   }
 
   renderInfo() {
+    this.#infoComponent.events = this.events;
+
     if (this.events.length) {
       render(this.#controlsElement, this.#infoComponent, RenderPosition.BEFOREBEGIN);
     }

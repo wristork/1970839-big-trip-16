@@ -26,8 +26,7 @@ const BLANK_EVENT = {
 
 export default class EventPresenter {
   #actionWithData = null;
-  #changeToEditMode = null;
-  #destroyNewForm = null;
+  #changeMode = null;
 
   #parent = null;
 
@@ -35,10 +34,9 @@ export default class EventPresenter {
   #editEventComponent = null;
   #eventComponent = null;
 
-  constructor(parentElement, actionWithData, changeViewToEdit, destroyNewForm) {
+  constructor(parentElement, actionWithData, changeMode) {
     this.#actionWithData = actionWithData;
-    this.#changeToEditMode = changeViewToEdit;
-    this.#destroyNewForm = destroyNewForm;
+    this.#changeMode = changeMode;
 
     this.#parent = parentElement;
   }
@@ -70,8 +68,8 @@ export default class EventPresenter {
     return this.#sourceEvent;
   }
 
-  replaceToNormal = () => {
-    document.removeEventListener('keydown', this.#onEscKeyDown);
+  replaceToNormal() {
+    this.#changeMode();
 
     if (this.event === BLANK_EVENT) {
       this.destroy();
@@ -79,20 +77,18 @@ export default class EventPresenter {
       return;
     }
 
-    if (this.#editEventComponent.element.parentElement === this.#parent.element) {
-      this.#editEventComponent.resetState(this.event);
-      this.#editEventComponent.removeDatePicker();
-
-      this.#replaceFromTo(this.#eventComponent, this.#editEventComponent);
-    }
+    this.#editEventComponent.resetState(this.event);
+    this.#editEventComponent.removeDatePicker();
   }
 
   replaceToEdit = () => {
-    this.#changeToEditMode();
+    this.#changeMode();
     this.#initEditMode();
   }
 
   destroy() {
+    document.removeEventListener('keydown', this.#onEscKeyDown);
+
     if (this.#eventComponent !== null) {
       remove(this.#eventComponent);
       this.#eventComponent = null;
@@ -160,7 +156,7 @@ export default class EventPresenter {
   };
 
   #onCancel = () => {
-    this.#destroyNewForm();
+    this.#changeMode(true);
 
     this.destroy();
   }
@@ -190,10 +186,6 @@ export default class EventPresenter {
   #onEscKeyDown = (evt) => {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
-
-      if (typeof this.#destroyNewForm === 'function') {
-        this.#destroyNewForm();
-      }
 
       this.replaceToNormal();
       document.removeEventListener('keydown', this.#onEscKeyDown);

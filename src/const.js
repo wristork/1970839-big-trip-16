@@ -43,7 +43,8 @@ export const FilterTypes = {
 
 export const MenuItems = {
   TABLE: 'table',
-  STATS: 'stats'
+  STATS: 'stats',
+  ADD_NEW: 'new event',
 };
 
 export const StatisticTypes = {
