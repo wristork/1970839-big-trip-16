@@ -1,7 +1,17 @@
 import AbstractObservable from '../utils/abstract-observable';
 
 export default class EventsModel extends AbstractObservable {
+  #apiService = null
   #events = null;
+
+  constructor(apiService) {
+    super();
+    this.#apiService = apiService;
+
+    this.#apiService.events.then((events) => {
+      console.log(events);
+    });
+  }
 
   get events() {
     return Array.from(this.#events);

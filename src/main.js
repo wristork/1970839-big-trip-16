@@ -10,14 +10,18 @@ import StatsComponent from './view/stats-view';
 import EventsModel from './model/events-model';
 import FilterModel from './model/filter-model';
 
-const EVENTS_AMOUNT = 4;
+import ApiService from './api-service';
+
+const EVENTS_AMOUNT = 20;
+const END_POINT = 'https://16.ecmascript.pages.academy/big-trip/';
+const AUTHORIZATION = 'Basic 161121jswristork020222';
 
 const newEventButtonElement = document.querySelector('.trip-main__event-add-btn');
 const tabsElement = document.querySelector('.trip-tabs');
 
 const events = Array.from({length: EVENTS_AMOUNT}, generateEvent);
 
-const eventsModel = new EventsModel();
+const eventsModel = new EventsModel(new ApiService(END_POINT, AUTHORIZATION));
 const filterModel = new FilterModel();
 
 eventsModel.events = events;
