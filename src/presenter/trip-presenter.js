@@ -4,7 +4,8 @@ import { getFilteredEventsByDate } from '../utils/common';
 
 import EventSorterComponent from '../view/event-sorter-view';
 import EventListComponent from '../view/event-list-view';
-import noEventsCompontent from '../view/no-events-view';
+import noEventsComponent from '../view/no-events-view';
+import LoadingComponent from '../view/loading-view';
 
 import EventPresenter from './event-presenter';
 
@@ -17,7 +18,8 @@ const SortType = {
 export default class TripPresenter {
   #eventListComponent = null;
   #eventSorterComponent = null;
-  #noEventsCompontent = null;
+  #noEventsComponent = null;
+  #loadingComponent = null;
 
   #eventListElement = null;
 
@@ -30,6 +32,8 @@ export default class TripPresenter {
   #eventPresenter = new Set();
 
   #sortType = SortType.DAY;
+
+  #isLoading = true;
 
   constructor(eventListElement, eventsModel, filterModel, options = {}) {
     this.#eventListElement = eventListElement;
@@ -62,12 +66,18 @@ export default class TripPresenter {
   init() {
     this.#eventListComponent = new EventListComponent();
     this.#eventSorterComponent = new EventSorterComponent();
-    this.#noEventsCompontent = new noEventsCompontent(this.#filterModel.filterType);
+    this.#loadingComponent = new LoadingComponent();
+    this.#noEventsComponent = new noEventsComponent(this.#filterModel.filterType);
 
     this.#newEventForm = new EventPresenter(this.#eventListComponent, this.#onActionEventView, this.#onChangeEventMode);
   }
 
   renderEventList() {
+    if (this.#isLoading) {
+      render(this.#eventListElement, this.#loadingComponent, RenderPosition.BEFOREEND);
+      return;
+    }
+
     if (this.events.length) {
       render(this.#eventListElement, this.#eventSorterComponent, RenderPosition.BEFOREEND);
       render(this.#eventListElement, this.#eventListComponent, RenderPosition.BEFOREEND);
@@ -76,7 +86,7 @@ export default class TripPresenter {
 
       this.#renderEvents(this.events);
     } else {
-      render(this.#eventListElement, this.#noEventsCompontent, RenderPosition.BEFOREEND);
+      render(this.#eventListElement, this.#noEventsComponent, RenderPosition.BEFOREEND);
     }
   }
 
@@ -85,7 +95,7 @@ export default class TripPresenter {
 
     remove(this.#eventListComponent);
     remove(this.#eventSorterComponent);
-    remove(this.#noEventsCompontent);
+    remove(this.#noEventsComponent);
 
     this.#satellites.newEventButtonElement.removeAttribute('disabled');
     this.#sortType = SortType.DAY;
@@ -166,6 +176,10 @@ export default class TripPresenter {
         this.clearEventList();
         this.renderEventList();
         break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        this.renderEventList();
     }
   }
 

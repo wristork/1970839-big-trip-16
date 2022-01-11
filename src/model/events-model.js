@@ -1,24 +1,29 @@
+import { UpdateType } from '../const';
+
 import AbstractObservable from '../utils/abstract-observable';
 
 export default class EventsModel extends AbstractObservable {
   #apiService = null
-  #events = null;
+  #events = new Set();
 
   constructor(apiService) {
     super();
     this.#apiService = apiService;
-
-    this.#apiService.events.then((events) => {
-      console.log(events.map((event) => this.#adaptToClient(event)));
-    });
   }
 
   get events() {
     return Array.from(this.#events);
   }
 
-  set events(value) {
-    this.#events = new Set(value);
+  init = async () => {
+    try {
+      const events = await this.#apiService.events;
+      this.#events = new Set(events.map(this.#adaptToClient));
+    } catch(err) {
+      this.#events = new Set();
+    }
+
+    this._notify(UpdateType.INIT);
   }
 
   addEvent(sourceEvent, event, updateType) {
@@ -74,8 +79,8 @@ export default class EventsModel extends AbstractObservable {
       price: event['base_price'],
       routeType: event['type'],
       date: {
-        start: event['date_from'],
-        end: event['date_to']
+        start: new Date(event['date_from']),
+        end: new Date(event['date_to']),
       },
       isFavorite: event['is_favorite'],
       offers: adaptedOffers,

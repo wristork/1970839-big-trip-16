@@ -2,7 +2,7 @@ import AbstractView from './abstract-view';
 
 const createDestinationSectionTemplate = ({description, images}) => {
   const imagesTemplate = (images && images.length)
-    ? Array.from(images, (imageSrc) => (`<img class="event__photo" src="${imageSrc}" alt="Event photo">`)).join('')
+    ? Array.from(images, (image) => (`<img class="event__photo" src="${image.src}" alt="${image.description}">`)).join('')
     : '';
 
   const photosContainerTemplate = (images && images.length)

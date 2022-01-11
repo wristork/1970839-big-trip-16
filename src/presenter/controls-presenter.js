@@ -94,6 +94,11 @@ export default class ControlsPresenter {
         this.renderControls();
         this.renderInfo();
         break;
+      case UpdateType.INIT:
+        this.#filtersComponent.eventLength = this.events.length;
+
+        this.renderControls();
+        this.renderInfo();
     }
   }
 }

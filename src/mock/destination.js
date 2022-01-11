@@ -26,7 +26,7 @@ export const generateImages = () => {
   const length = getRandomInteger(1, 5);
   const path = 'http://picsum.photos/248/152?r=';
 
-  return Array.from({length}, () => `${path}${getRandomInteger(1, 99)}`);
+  return Array.from({length}, () => ({ src: `${path}${getRandomInteger(1, 99)}`, description: 'Image description' }));
 };
 
 const createDestinationInfo = () => (
