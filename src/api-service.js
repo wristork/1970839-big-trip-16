@@ -23,7 +23,7 @@ export default class ApiService {
     const response = await this.#load({
       url: `points/${event.id}`,
       method: Method.PUT,
-      body: JSON.stringify(event),
+      body: JSON.stringify(this.#adaptToServer(event)),
       headers: new Headers({ 'Content-Type': 'application/json' }),
     });
 
@@ -51,6 +51,41 @@ export default class ApiService {
     } catch(err) {
       ApiService.catchError(err);
     }
+  }
+
+  #adaptToServer = (event) => {
+    const adaptedOffers = event.offers.map((offer) => {
+      const adaptedOffer = {...offer,
+        id: offer.name,
+        title: offer.text
+      };
+
+      delete adaptedOffer['name'];
+      delete adaptedOffer['text'];
+
+      return adaptedOffer;
+    });
+
+    const adaptedEvent = {...event,
+      'base_price': event.price,
+      'date_from': event.date.start,
+      'date_to': event.date.end,
+      'destination': {
+        'description': event.destination.description,
+        'name': event.destination.place,
+        'pictures': event.destination.images
+      },
+      'is_favorite': event.isFavorite,
+      'type': event.routeType,
+      offers: adaptedOffers
+    };
+
+    delete adaptedEvent['price'];
+    delete adaptedEvent['date'];
+    delete adaptedEvent['isFavorite'];
+    delete adaptedEvent['routeType'];
+
+    return adaptedEvent;
   }
 
   static parseResponse = (response) => response.json();

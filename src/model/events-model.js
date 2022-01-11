@@ -9,7 +9,7 @@ export default class EventsModel extends AbstractObservable {
     this.#apiService = apiService;
 
     this.#apiService.events.then((events) => {
-      console.log(events);
+      console.log(events.map((event) => this.#adaptToClient(event)));
     });
   }
 
@@ -55,5 +55,43 @@ export default class EventsModel extends AbstractObservable {
     this.#events.delete(sourceEvent);
 
     this._notify(updateType, sourceEvent);
+  }
+
+  #adaptToClient = (event) => {
+    const adaptedOffers = event.offers.map((offer) => {
+      const adaptedOffer = {...offer,
+        name: offer.id,
+        text: offer.title
+      };
+
+      delete adaptedOffer['id'];
+      delete adaptedOffer['title'];
+
+      return adaptedOffer;
+    });
+
+    const adaptedEvent = {...event,
+      price: event['base_price'],
+      routeType: event['type'],
+      date: {
+        start: event['date_from'],
+        end: event['date_to']
+      },
+      isFavorite: event['is_favorite'],
+      offers: adaptedOffers,
+      destination: {
+        place: event.destination.name,
+        description: event.destination.description,
+        images: event.destination.pictures
+      }
+    };
+
+    delete adaptedEvent['base_price'];
+    delete adaptedEvent['type'];
+    delete adaptedEvent['date_from'];
+    delete adaptedEvent['date_to'];
+    delete adaptedEvent['is_favorite'];
+
+    return adaptedEvent;
   }
 }
