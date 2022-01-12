@@ -27,10 +27,10 @@ const createRoutesTemplate = () => (
 );
 
 const createDestinationOptionsTemplate = (destinations) => (
-  Array.from(destinations, (destination) => (`<option value="${destination}"></option>`)).join('')
+  destinations.map((destination) => (`<option value="${destination}"></option>`)).join('')
 );
 
-const createEditEventTemplate = (data) => {
+const createEditEventTemplate = (data, destinations) => {
   const {
     date,
     routeType,
@@ -45,7 +45,7 @@ const createEditEventTemplate = (data) => {
 
   const iconName = routeType.toLowerCase();
   const routesTemplate = createRoutesTemplate();
-  const destinationOptionsTemplate = createDestinationOptionsTemplate(DESTINATIONS);
+  const destinationOptionsTemplate = createDestinationOptionsTemplate(destinations);
 
   const detailsTemplate = (isHaveDescription || isHaveImages || isHaveOffers)
     ? new DetailsComponent(offers, destination).template
@@ -129,9 +129,12 @@ export default class EditEventComponent extends SmartView {
   #endDatePicker = null;
 
   #saveButtonElement = null;
+  #destinations = null;
 
-  constructor(event) {
+  constructor(event, destinations = []) {
     super();
+
+    this.#destinations = new Map(destinations.map((destination) => [destination.place, destination]));
 
     this._data = EditEventComponent.parseEventToData(event);
     this.#saveButtonElement = this.element.querySelector('.event__save-btn');
@@ -140,7 +143,7 @@ export default class EditEventComponent extends SmartView {
   }
 
   get template() {
-    return createEditEventTemplate(this._data);
+    return createEditEventTemplate(this._data, Array.from(this.#destinations.keys()));
   }
 
   addNormalStateClickHandler(cb) {
@@ -290,8 +293,7 @@ export default class EditEventComponent extends SmartView {
     if (target.tagName !== 'INPUT') {
       return;
     }
-
-    if (!~DESTINATIONS.indexOf(target.value)) {
+    if (!~Array.from(this.#destinations.keys()).indexOf(target.value)) {
       target.value = '';
       target.style.outlineColor = 'red';
       target.style.border = '1px solid orangered';
@@ -300,7 +302,7 @@ export default class EditEventComponent extends SmartView {
       target.style = null;
       this.#saveButtonElement.removeAttribute('disabled');
 
-      this.updateData({ destination: generateDestination(target.value) });
+      this.updateData({ destination: this.#destinations.get(target.value) });
     }
   };
 
@@ -320,10 +322,6 @@ export default class EditEventComponent extends SmartView {
       routeType: target.value,
       offers: offers
     });
-
-    if (typeof this.#callbacks.clickEventType === 'function') {
-      this.#callbacks.clickEventType();
-    }
   };
 
   #onOfferClick = (evt) => {

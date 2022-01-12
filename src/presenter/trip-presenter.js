@@ -28,6 +28,7 @@ export default class TripPresenter {
 
   #eventsModel = null;
   #filterModel = null;
+  #destinationsModel = null;
 
   #eventPresenter = new Set();
 
@@ -35,11 +36,12 @@ export default class TripPresenter {
 
   #isLoading = true;
 
-  constructor(eventListElement, eventsModel, filterModel, options = {}) {
+  constructor(eventListElement, eventsModel, filterModel, destinationsModel, options = {}) {
     this.#eventListElement = eventListElement;
     this.#satellites = options?.satellites;
     this.#eventsModel = eventsModel;
     this.#filterModel = filterModel;
+    this.#destinationsModel = destinationsModel;
 
     if (this.#eventsModel) {
       this.#eventsModel.addObserver(this.#onChangeEventModel);
@@ -69,7 +71,12 @@ export default class TripPresenter {
     this.#loadingComponent = new LoadingComponent();
     this.#noEventsComponent = new noEventsComponent(this.#filterModel.filterType);
 
-    this.#newEventForm = new EventPresenter(this.#eventListComponent, this.#onActionEventView, this.#onChangeEventMode);
+    this.#newEventForm = new EventPresenter(
+      this.#eventListComponent,
+      this.#onActionEventView,
+      this.#onChangeEventMode,
+      this.#destinationsModel.destinations
+    );
   }
 
   renderEventList() {
@@ -125,7 +132,12 @@ export default class TripPresenter {
 
   #renderEvents = (events) => {
     for (let i = 0; i < events.length; i++) {
-      const event = new EventPresenter(this.#eventListComponent, this.#onActionEventView, this.#onChangeEventMode);
+      const event = new EventPresenter(
+        this.#eventListComponent,
+        this.#onActionEventView,
+        this.#onChangeEventMode,
+        this.#destinationsModel.destinations
+      );
 
       event.init(events[i]);
 

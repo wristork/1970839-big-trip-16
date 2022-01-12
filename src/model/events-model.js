@@ -4,6 +4,7 @@ import AbstractObservable from '../utils/abstract-observable';
 
 export default class EventsModel extends AbstractObservable {
   #apiService = null
+
   #events = new Set();
 
   constructor(apiService) {

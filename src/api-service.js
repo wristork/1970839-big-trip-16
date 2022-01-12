@@ -13,10 +13,15 @@ export default class ApiService {
   }
 
   get events() {
-    return (
-      this.#load({ url: 'points' })
-      .then(ApiService.parseResponse)
-    );
+    return this.#load({ url: 'points' }).then(ApiService.parseResponse)
+  }
+
+  get destinations() {
+    return this.#load({ url: 'destinations' }).then(ApiService.parseResponse);
+  }
+
+  get offers() {
+    return this.#load({ url: 'offers' }).then(ApiService.parseResponse);
   }
 
   updateEvent = async (event) => {
