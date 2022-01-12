@@ -13,7 +13,7 @@ export default class ApiService {
   }
 
   get events() {
-    return this.#load({ url: 'points' }).then(ApiService.parseResponse)
+    return this.#load({ url: 'points' }).then(ApiService.parseResponse);
   }
 
   get destinations() {

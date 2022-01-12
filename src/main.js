@@ -33,8 +33,8 @@ const tripPresenter = new TripPresenter(
   filterModel,
   destinationsModel,
   offersModel,
-  { satellites: { newEventButtonElement }
-});
+  { satellites: { newEventButtonElement } }
+);
 const controlsPresenter = new ControlsPresenter(document.querySelector('.trip-controls'), filterModel, eventsModel);
 
 const resetTabsStates = () => {

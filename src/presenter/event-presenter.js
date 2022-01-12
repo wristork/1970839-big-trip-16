@@ -1,8 +1,6 @@
 import dayjs from 'dayjs';
-import { generateDescription, generateImages } from '../mock/destination';
-import { generateOffers } from '../mock/offers';
 import { render, replace, remove, RenderPosition } from '../render';
-import { ROUTES, DESTINATIONS, UserAction, UpdateType } from '../const';
+import { UserAction, UpdateType } from '../const';
 
 import EventComponent from '../view/event-view';
 import EditEventComponent from '../view/edit-event-view';

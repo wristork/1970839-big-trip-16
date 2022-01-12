@@ -49,7 +49,6 @@ export default class EventsModel extends AbstractObservable {
 
       this._notify(updateType, sourceEvent);
     } catch(err) {
-      console.log(err);
       throw new Error('Can\'t update event');
     }
   }
