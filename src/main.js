@@ -9,6 +9,7 @@ import StatsComponent from './view/stats-view';
 import EventsModel from './model/events-model';
 import FilterModel from './model/filter-model';
 import DestinationsModel from './model/destination-model';
+import OffersModel from './model/offers-model';
 
 import ApiService from './api-service';
 
@@ -22,6 +23,7 @@ const statsComponent = new StatsComponent();
 const apiService = new ApiService(END_POINT, AUTHORIZATION);
 
 const destinationsModel = new DestinationsModel(apiService);
+const offersModel = new OffersModel(apiService);
 const eventsModel = new EventsModel(apiService);
 const filterModel = new FilterModel();
 
@@ -30,6 +32,7 @@ const tripPresenter = new TripPresenter(
   eventsModel,
   filterModel,
   destinationsModel,
+  offersModel,
   { satellites: { newEventButtonElement }
 });
 const controlsPresenter = new ControlsPresenter(document.querySelector('.trip-controls'), filterModel, eventsModel);
@@ -98,7 +101,9 @@ tripPresenter.renderEventList();
 controlsPresenter.init();
 
 destinationsModel.init().finally(() => {
-  eventsModel.init().finally(() => {
-    tripPresenter.renderEventList();
+  offersModel.init().finally(() => {
+    eventsModel.init().finally(() => {
+      tripPresenter.renderEventList();
+    });
   });
 });

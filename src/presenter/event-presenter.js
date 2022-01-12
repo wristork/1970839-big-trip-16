@@ -35,14 +35,16 @@ export default class EventPresenter {
   #eventComponent = null;
 
   #destinations = [];
+  #offers = [];
 
-  constructor(parentElement, actionWithData, changeMode, destinations) {
+  constructor(parentElement, actionWithData, changeMode, destinations, offers) {
     this.#actionWithData = actionWithData;
     this.#changeMode = changeMode;
 
     this.#parent = parentElement;
 
     this.#destinations = destinations;
+    this.#offers = offers;
   }
 
   init(event = BLANK_EVENT) {
@@ -50,8 +52,8 @@ export default class EventPresenter {
 
     const oldEventComponent = this.#eventComponent;
 
-    this.#editEventComponent = new EditEventComponent(event, this.#destinations);
-    this.#eventComponent = new EventComponent(event, this.#destinations);
+    this.#editEventComponent = new EditEventComponent(event, this.#destinations, this.#offers);
+    this.#eventComponent = new EventComponent(event);
 
     this.#setAllHandlers();
 

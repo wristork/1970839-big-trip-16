@@ -2,24 +2,22 @@ import AbstractView from './abstract-view';
 
 const createOffersTemplate = (offers) => (
   Array.from(offers, (offer, index) => {
-    const name = offer.name;
-    const text = offer.text;
+    const id = offer.id;
+    const text = offer.title;
     const price = offer.price;
-
-    const nameId = `${name}-${index + 1}`;
 
     const checked = offer.isChecked ? 'checked' : '';
 
     return `<div class="event__offer-selector">
       <input
         class="event__offer-checkbox  visually-hidden"
-        id="event-offer-${nameId}"
+        id="event-offer-${id}"
         type="checkbox"
-        name="event-offer-${name}"
+        name="event-offer-${id}"
         data-index="${index}"
         ${checked}
       >
-      <label class="event__offer-label" for="event-offer-${nameId}">
+      <label class="event__offer-label" for="event-offer-${id}">
         <span class="event__offer-title">${text}</span>
         &plus;&euro;&nbsp;
         <span class="event__offer-price">${price}</span>

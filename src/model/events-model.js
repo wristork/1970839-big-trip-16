@@ -64,18 +64,6 @@ export default class EventsModel extends AbstractObservable {
   }
 
   #adaptToClient = (event) => {
-    const adaptedOffers = event.offers.map((offer) => {
-      const adaptedOffer = {...offer,
-        name: offer.id,
-        text: offer.title
-      };
-
-      delete adaptedOffer['id'];
-      delete adaptedOffer['title'];
-
-      return adaptedOffer;
-    });
-
     const adaptedEvent = {...event,
       price: event['base_price'],
       routeType: event['type'],
@@ -84,7 +72,6 @@ export default class EventsModel extends AbstractObservable {
         end: new Date(event['date_to']),
       },
       isFavorite: event['is_favorite'],
-      offers: adaptedOffers,
       destination: {
         place: event.destination.name,
         description: event.destination.description,

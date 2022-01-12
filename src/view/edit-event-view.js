@@ -7,21 +7,18 @@ import '../../node_modules/flatpickr/dist/themes/material_blue.css';
 import SmartView from './smart-view';
 import DetailsComponent from './event-details-view';
 
-import { ROUTES, DESTINATIONS } from '../const';
-import { generateOffers } from '../mock/offers';
-import { generateDestination } from '../mock/destination';
 import { getFormattedDate } from '../utils/date';
 
-const createRoutesTemplate = () => (
-  Array.from(ROUTES, (route) => {
-    const routeLower = route.toLowerCase();
+const createRoutesTemplate = (offerTypes) => (
+  offerTypes.map((type) => {
+    const typeLower = type.toLowerCase();
 
     return `<div class="event__type-item">
-      <input id="event-type-${routeLower}-1"
+      <input id="event-type-${typeLower}-1"
         class="event__type-input  visually-hidden"
         type="radio" name="event-type"
-        value="${route}">
-      <label class="event__type-label  event__type-label--${routeLower}" for="event-type-${routeLower}-1">${route}</label>
+        value="${type}">
+      <label class="event__type-label  event__type-label--${typeLower}" for="event-type-${typeLower}-1">${type[0].toUpperCase() + type.slice(1)}</label>
     </div>`;
   }).join('')
 );
@@ -30,7 +27,7 @@ const createDestinationOptionsTemplate = (destinations) => (
   destinations.map((destination) => (`<option value="${destination}"></option>`)).join('')
 );
 
-const createEditEventTemplate = (data, destinations) => {
+const createEditEventTemplate = (data, destinations, offerTypes) => {
   const {
     date,
     routeType,
@@ -44,7 +41,7 @@ const createEditEventTemplate = (data, destinations) => {
   } = data;
 
   const iconName = routeType.toLowerCase();
-  const routesTemplate = createRoutesTemplate();
+  const routesTemplate = createRoutesTemplate(offerTypes);
   const destinationOptionsTemplate = createDestinationOptionsTemplate(destinations);
 
   const detailsTemplate = (isHaveDescription || isHaveImages || isHaveOffers)
@@ -130,11 +127,13 @@ export default class EditEventComponent extends SmartView {
 
   #saveButtonElement = null;
   #destinations = null;
+  #offers = null
 
-  constructor(event, destinations = []) {
+  constructor(event, destinations = [], offers = []) {
     super();
 
     this.#destinations = new Map(destinations.map((destination) => [destination.place, destination]));
+    this.#offers = new Map(offers.map((offer) => [offer.type, offer]));
 
     this._data = EditEventComponent.parseEventToData(event);
     this.#saveButtonElement = this.element.querySelector('.event__save-btn');
@@ -143,7 +142,7 @@ export default class EditEventComponent extends SmartView {
   }
 
   get template() {
-    return createEditEventTemplate(this._data, Array.from(this.#destinations.keys()));
+    return createEditEventTemplate(this._data, Array.from(this.#destinations.keys()), Array.from(this.#offers.keys()));
   }
 
   addNormalStateClickHandler(cb) {
@@ -313,7 +312,7 @@ export default class EditEventComponent extends SmartView {
       return;
     }
 
-    const offers = generateOffers(target.value);
+    const offers = this.#offers.get(target.value.toLowerCase()).offers;
     offers.forEach((offer) => {
       offer.isChecked = false;
     });

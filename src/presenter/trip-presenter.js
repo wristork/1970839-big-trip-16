@@ -29,6 +29,7 @@ export default class TripPresenter {
   #eventsModel = null;
   #filterModel = null;
   #destinationsModel = null;
+  #offersModel = null;
 
   #eventPresenter = new Set();
 
@@ -36,12 +37,13 @@ export default class TripPresenter {
 
   #isLoading = true;
 
-  constructor(eventListElement, eventsModel, filterModel, destinationsModel, options = {}) {
+  constructor(eventListElement, eventsModel, filterModel, destinationsModel, offersModel, options = {}) {
     this.#eventListElement = eventListElement;
     this.#satellites = options?.satellites;
     this.#eventsModel = eventsModel;
     this.#filterModel = filterModel;
     this.#destinationsModel = destinationsModel;
+    this.#offersModel = offersModel;
 
     if (this.#eventsModel) {
       this.#eventsModel.addObserver(this.#onChangeEventModel);
@@ -75,7 +77,8 @@ export default class TripPresenter {
       this.#eventListComponent,
       this.#onActionEventView,
       this.#onChangeEventMode,
-      this.#destinationsModel.destinations
+      this.#destinationsModel.destinations,
+      this.#offersModel.offers
     );
   }
 
@@ -136,7 +139,8 @@ export default class TripPresenter {
         this.#eventListComponent,
         this.#onActionEventView,
         this.#onChangeEventMode,
-        this.#destinationsModel.destinations
+        this.#destinationsModel.destinations,
+        this.#offersModel.offers
       );
 
       event.init(events[i]);
