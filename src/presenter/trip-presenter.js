@@ -72,7 +72,9 @@ export default class TripPresenter {
     this.#eventSorterComponent = new EventSorterComponent();
     this.#loadingComponent = new LoadingComponent();
     this.#noEventsComponent = new noEventsComponent(this.#filterModel.filterType);
+  }
 
+  initNewForm() {
     this.#newEventForm = new EventPresenter(
       this.#eventListComponent,
       this.#onActionEventView,
@@ -195,6 +197,7 @@ export default class TripPresenter {
       case UpdateType.INIT:
         this.#isLoading = false;
         remove(this.#loadingComponent);
+        this.initNewForm();
         this.renderEventList();
     }
   }

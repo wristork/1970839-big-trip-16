@@ -12,15 +12,11 @@ const BLANK_EVENT = {
     start: dayjs().toDate(),
     end: dayjs().add(1, 'day').toDate()
   },
-  routeType: ROUTES[0],
-  destination:  {
-    place: DESTINATIONS[0],
-    description: generateDescription(),
-    images: generateImages()
-  },
+  routeType: '',
   isFavorite: false,
   price: 0,
-  offers: generateOffers(ROUTES[0]),
+  destination: null,
+  offers: null,
   isBlank: true,
 };
 
@@ -45,6 +41,12 @@ export default class EventPresenter {
 
     this.#destinations = destinations;
     this.#offers = offers;
+
+    if (!BLANK_EVENT.destination || !BLANK_EVENT.offers || !BLANK_EVENT.routeType) {
+      BLANK_EVENT.destination = destinations[0] ?? '';
+      BLANK_EVENT.offers = offers[0]?.offers ?? [];
+      BLANK_EVENT.routeType = offers[0]?.type ?? '';
+    }
   }
 
   init(event = BLANK_EVENT) {
@@ -54,8 +56,6 @@ export default class EventPresenter {
 
     this.#editEventComponent = new EditEventComponent(event, this.#destinations, this.#offers);
     this.#eventComponent = new EventComponent(event);
-
-    this.#setAllHandlers();
 
     if (event === BLANK_EVENT) {
       render(this.#parent, this.#eventComponent, RenderPosition.AFTERBEGIN);
@@ -68,6 +68,8 @@ export default class EventPresenter {
         this.#replaceFromTo(this.#eventComponent, oldEventComponent);
       }
     }
+
+    this.#setAllHandlers();
   }
 
   get event() {
