@@ -13,7 +13,7 @@ import OffersModel from './model/offers-model';
 
 import ApiService from './api-service';
 
-const END_POINT = 'https://16.ecmascript.pages.academy/big-trip/';
+const END_POINT = 'https://16.ecmascript.pages.academy/big-trip';
 const AUTHORIZATION = 'Basic 161121jswristork020222';
 
 const newEventButtonElement = document.querySelector('.trip-main__event-add-btn');

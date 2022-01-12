@@ -37,20 +37,21 @@ export default class EventsModel extends AbstractObservable {
     this._notify(updateType, event);
   }
 
-  updateEvent(sourceEvent, updatedEvent, updateType) {
+  updateEvent = async (sourceEvent, updatedEvent, updateType) => {
     if (!this.#events.has(sourceEvent)) {
       throw new Error('This trip event object does not exist in the model');
     }
 
-    const keysOfUpdatedEvent = Object.keys(updatedEvent);
+    try {
+      this.#updateEvent(sourceEvent, updatedEvent);
 
-    for (const key of keysOfUpdatedEvent) {
-      if (key in sourceEvent) {
-        sourceEvent[key] = updatedEvent[key];
-      }
+      await this.#apiService.updateEvent(sourceEvent);
+
+      this._notify(updateType, sourceEvent);
+    } catch(err) {
+      console.log(err);
+      throw new Error('Can\'t update event');
     }
-
-    this._notify(updateType, sourceEvent);
   }
 
   deleteEvent(sourceEvent, updateType) {
@@ -61,6 +62,16 @@ export default class EventsModel extends AbstractObservable {
     this.#events.delete(sourceEvent);
 
     this._notify(updateType, sourceEvent);
+  }
+
+  #updateEvent = (target, donor) => {
+    const keys = Object.keys(donor);
+
+    for (const key of keys) {
+      if (key in target) {
+        target[key] = donor[key];
+      }
+    }
   }
 
   #adaptToClient = (event) => {

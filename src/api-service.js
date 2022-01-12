@@ -32,7 +32,7 @@ export default class ApiService {
       headers: new Headers({ 'Content-Type': 'application/json' }),
     });
 
-    const parsedResponse = await ApiService.parsedResponse(response);
+    const parsedResponse = await ApiService.parseResponse(response);
 
     return parsedResponse;
   }
@@ -59,18 +59,6 @@ export default class ApiService {
   }
 
   #adaptToServer = (event) => {
-    const adaptedOffers = event.offers.map((offer) => {
-      const adaptedOffer = {...offer,
-        id: offer.name,
-        title: offer.text
-      };
-
-      delete adaptedOffer['name'];
-      delete adaptedOffer['text'];
-
-      return adaptedOffer;
-    });
-
     const adaptedEvent = {...event,
       'base_price': event.price,
       'date_from': event.date.start,
@@ -82,7 +70,6 @@ export default class ApiService {
       },
       'is_favorite': event.isFavorite,
       'type': event.routeType,
-      offers: adaptedOffers
     };
 
     delete adaptedEvent['price'];
