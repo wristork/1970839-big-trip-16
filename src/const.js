@@ -1,7 +1,7 @@
 export const ROUTES = [
-  'Check-in', 'Sightseeing', 'Restaurant',
-  'Taxi', 'Bus', 'Train',
-  'Ship', 'Drive', 'Flight'
+  'check-in', 'sightseeing', 'restaurant',
+  'taxi', 'bus', 'train',
+  'ship', 'drive', 'flight'
 ];
 
 export const DESTINATIONS = [
@@ -32,7 +32,8 @@ export const UserAction = {
 export const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
-  MAJOR: 'MAJOR'
+  MAJOR: 'MAJOR',
+  INIT: 'INIT',
 };
 
 export const FilterTypes = {

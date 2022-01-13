@@ -1,4 +1,3 @@
-import { generateEvent } from './mock/event';
 import { render, remove, RenderPosition } from './render';
 import { MenuItems, UpdateType, FilterTypes } from './const';
 
@@ -9,25 +8,34 @@ import StatsComponent from './view/stats-view';
 
 import EventsModel from './model/events-model';
 import FilterModel from './model/filter-model';
+import DestinationsModel from './model/destination-model';
+import OffersModel from './model/offers-model';
 
-const EVENTS_AMOUNT = 4;
+import ApiService from './api-service';
+
+const END_POINT = 'https://16.ecmascript.pages.academy/big-trip';
+const AUTHORIZATION = 'Basic 161121jswristork020222';
 
 const newEventButtonElement = document.querySelector('.trip-main__event-add-btn');
 const tabsElement = document.querySelector('.trip-tabs');
+const statsComponent = new StatsComponent();
 
-const events = Array.from({length: EVENTS_AMOUNT}, generateEvent);
+const apiService = new ApiService(END_POINT, AUTHORIZATION);
 
-const eventsModel = new EventsModel();
+const destinationsModel = new DestinationsModel(apiService);
+const offersModel = new OffersModel(apiService);
+const eventsModel = new EventsModel(apiService);
 const filterModel = new FilterModel();
 
-eventsModel.events = events;
-
-const tripPresenter = new TripPresenter(document.querySelector('.trip-events'), eventsModel, filterModel, {
-  satellites: { newEventButtonElement }
-});
+const tripPresenter = new TripPresenter(
+  document.querySelector('.trip-events'),
+  eventsModel,
+  filterModel,
+  destinationsModel,
+  offersModel,
+  { satellites: { newEventButtonElement } }
+);
 const controlsPresenter = new ControlsPresenter(document.querySelector('.trip-controls'), filterModel, eventsModel);
-
-const statsComponent = new StatsComponent();
 
 const resetTabsStates = () => {
   for (const child of tabsElement.children) {
@@ -91,5 +99,11 @@ tripPresenter.init();
 tripPresenter.renderEventList();
 
 controlsPresenter.init();
-controlsPresenter.renderControls();
-controlsPresenter.renderInfo();
+
+destinationsModel.init().finally(() => {
+  offersModel.init().finally(() => {
+    eventsModel.init().finally(() => {
+      tripPresenter.renderEventList();
+    });
+  });
+});
