@@ -1,6 +1,8 @@
 const Method = {
   GET: 'GET',
-  PUT: 'PUT'
+  PUT: 'PUT',
+  POST: 'POST',
+  DELETE: 'DELETE',
 };
 
 export default class ApiService {
@@ -22,6 +24,28 @@ export default class ApiService {
 
   get offers() {
     return this.#load({ url: 'offers' }).then(ApiService.parseResponse);
+  }
+
+  addEvent = async (event) => {
+    const response = await this.#load({
+      url: `points`,
+      method: Method.POST,
+      body: JSON.stringify(this.#adaptToServer(event)),
+      headers: new Headers({ 'Content-Type': 'application/json' })
+    });
+
+    const parsedResponse = await ApiService.parseResponse(response);
+
+    return parsedResponse;
+  }
+
+  deleteEvent = async (event) => {
+    const response = await this.#load({
+      url: `points/${event.id}`,
+      method: Method.DELETE,
+    });
+
+    return response;
   }
 
   updateEvent = async (event) => {
