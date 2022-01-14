@@ -361,15 +361,15 @@ export default class EditEventComponent extends SmartView {
     event.destination.place = he.encode(event.destination.place);
 
     if (!event.isHaveDescription) {
-      event.destination.description = null;
+      event.destination.description = '';
     }
 
     if (!event.isHaveImages) {
-      event.destination.images = null;
+      event.destination.images = [];
     }
 
     if (!event.isHaveOffers) {
-      event.offers = null;
+      event.offers = [];
     }
 
     if ('isBlank' in event) {
