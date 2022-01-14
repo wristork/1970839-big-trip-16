@@ -28,7 +28,7 @@ export default class ApiService {
 
   addEvent = async (event) => {
     const response = await this.#load({
-      url: `points`,
+      url: 'points',
       method: Method.POST,
       body: JSON.stringify(this.#adaptToServer(event)),
       headers: new Headers({ 'Content-Type': 'application/json' })

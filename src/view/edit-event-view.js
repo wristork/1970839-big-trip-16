@@ -51,7 +51,7 @@ const createEditEventTemplate = (data, destinations, offerTypes) => {
     ? new DetailsComponent(offers, destination, isDisabled).template
     : '';
 
-  const deleteText = isDeleting ? 'Deleting...' : 'Delete'
+  const deleteText = isDeleting ? 'Deleting...' : 'Delete';
   const resetButtonText = isBlank ? 'Cancel' : deleteText;
 
   const rollupButtonTemplate = isBlank

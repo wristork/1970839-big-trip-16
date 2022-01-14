@@ -48,6 +48,11 @@ const changeScreen = (value) => {
     case MenuItems.ADD_NEW:
       resetTabsStates();
       tabsElement.children[0].classList.add('trip-tabs__btn--active');
+      remove(statsComponent);
+      tripPresenter.renderEventList();
+      controlsPresenter.renderControls();
+      controlsPresenter.redrawInfo();
+      break;
     case MenuItems.TABLE:
       remove(statsComponent);
       tripPresenter.renderEventList();
