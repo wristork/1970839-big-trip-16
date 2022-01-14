@@ -108,6 +108,25 @@ export default class EventPresenter {
     }
   }
 
+  setSavingState() {
+    this.#editEventComponent.updateData({
+      isSaving: true,
+      isDisabled: true,
+    });
+  }
+
+  setDeletingState() {
+    this.#editEventComponent.updateData({
+      isDeleting: true,
+      isDisabled: true,
+    });
+  }
+
+  setAbortingState() {
+    this.#editEventComponent.resetState(this.event);
+    this.#editEventComponent.shake();
+  }
+
   #initEditMode = () => {
     this.#editEventComponent.setDatePicker();
 
@@ -133,7 +152,7 @@ export default class EventPresenter {
   }
 
   #onEditSave = (updatedEvent) => {
-    this.replaceToNormal();
+    this.setSavingState();
 
     this.#actionWithData(
       UserAction.UPDATE_EVENT,

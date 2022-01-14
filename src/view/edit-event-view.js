@@ -37,7 +37,10 @@ const createEditEventTemplate = (data, destinations, offerTypes) => {
     isHaveDescription,
     isHaveImages,
     isHaveOffers,
-    isBlank
+    isBlank,
+    isSaving,
+    isDeleting,
+    isDisabled
   } = data;
 
   const iconName = routeType.toLowerCase();
@@ -45,10 +48,11 @@ const createEditEventTemplate = (data, destinations, offerTypes) => {
   const destinationOptionsTemplate = createDestinationOptionsTemplate(destinations);
 
   const detailsTemplate = (isHaveDescription || isHaveImages || isHaveOffers)
-    ? new DetailsComponent(offers, destination).template
+    ? new DetailsComponent(offers, destination, isDisabled).template
     : '';
 
-  const resetButtonText = isBlank ? 'Cancel' : 'Delete';
+  const deleteText = isDeleting ? 'Deleting...' : 'Delete'
+  const resetButtonText = isBlank ? 'Cancel' : deleteText;
 
   const rollupButtonTemplate = isBlank
     ? ''
@@ -83,7 +87,9 @@ const createEditEventTemplate = (data, destinations, offerTypes) => {
             id="event-destination-1" type="text"
             name="event-destination"
             value="${destination.place}"
-            list="destination-list-1">
+            list="destination-list-1"
+            ${isDisabled ? 'disabled' : ''}
+          >
           <datalist id="destination-list-1">
             ${destinationOptionsTemplate}
           </datalist>
@@ -94,13 +100,17 @@ const createEditEventTemplate = (data, destinations, offerTypes) => {
           <input class="event__input  event__input--time"
             id="event-start-time-1" type="text"
             name="event-start-time"
-            value="${getFormattedDate(date.start, 'DD/MM/YY HH:mm')}">
+            value="${getFormattedDate(date.start, 'DD/MM/YY HH:mm')}"
+            ${isDisabled ? 'disabled' : ''}
+          >
           &mdash;
           <label class="visually-hidden" for="event-end-time-1">To</label>
           <input class="event__input  event__input--time"
             id="event-end-time-1" type="text"
             name="event-end-time"
-            value="${getFormattedDate(date.end, 'DD/MM/YY HH:mm')}">
+            value="${getFormattedDate(date.end, 'DD/MM/YY HH:mm')}"
+            ${isDisabled ? 'disabled' : ''}
+          >
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -108,11 +118,18 @@ const createEditEventTemplate = (data, destinations, offerTypes) => {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}">
+          <input
+            class="event__input  event__input--price"
+            id="event-price-1"
+            type="text"
+            name="event-price"
+            value="${price}"
+            ${isDisabled ? 'disabled' : ''}
+          >
         </div>
 
-        <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">${resetButtonText}</button>
+        <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
+        <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>${resetButtonText}</button>
         ${rollupButtonTemplate}
       </header>
       ${detailsTemplate}
@@ -176,14 +193,13 @@ export default class EditEventComponent extends SmartView {
   restoreHandlers() {
     this.element.querySelector('.event__rollup-btn')?.addEventListener('click', this.#onClickToChangeViewMode);
     this.element.querySelector('form').addEventListener('submit', this.#onFormSubmit);
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#onClickResetButton);
 
     this.#setInnerHandlers();
   }
 
   resetState(event) {
-    this._data = EditEventComponent.parseEventToData(event);
-
-    this.updateElement();
+    this.updateData(EditEventComponent.parseEventToData(event));
   }
 
   setDatePicker() {
@@ -200,6 +216,10 @@ export default class EditEventComponent extends SmartView {
       this.#endDatePicker.destroy();
       this.#endDatePicker = null;
     }
+  }
+
+  shake() {
+    this.element.classList.toggle('shake');
   }
 
   #initDatePicker = () => {
@@ -350,7 +370,10 @@ export default class EditEventComponent extends SmartView {
         offers: offers,
         isHaveDescription: Boolean(event.destination.description),
         isHaveImages: Boolean(event.destination.images && event.destination.images.length),
-        isHaveOffers: Boolean(event.offers !== null && event.offers.length)
+        isHaveOffers: Boolean(event.offers !== null && event.offers.length),
+        isSaving: false,
+        isDeleting: false,
+        isDisabled: false,
       }
     );
   };
@@ -379,6 +402,9 @@ export default class EditEventComponent extends SmartView {
     delete event.isHaveDescription;
     delete event.isHaveImages;
     delete event.isHaveOffers;
+    delete event.isSaving;
+    delete event.isDeleting;
+    delete event.isDisabled;
 
     return event;
   };

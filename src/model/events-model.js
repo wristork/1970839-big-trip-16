@@ -49,9 +49,11 @@ export default class EventsModel extends AbstractObservable {
     try {
       this.#updateEvent(sourceEvent, updatedEvent);
 
-      await this.#apiService.updateEvent(sourceEvent);
+      const response = await this.#apiService.updateEvent(sourceEvent);
 
       this._notify(updateType, sourceEvent);
+
+      return response;
     } catch(err) {
       throw new Error('Can\'t update event');
     }

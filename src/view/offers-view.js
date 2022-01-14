@@ -1,6 +1,6 @@
 import AbstractView from './abstract-view';
 
-const createOffersTemplate = (offers) => (
+const createOffersTemplate = (offers, isDisabled) => (
   Array.from(offers, (offer, index) => {
     const id = offer.id;
     const text = offer.title;
@@ -16,6 +16,7 @@ const createOffersTemplate = (offers) => (
         name="event-offer-${id}"
         data-index="${index}"
         ${checked}
+        ${isDisabled ? 'disabled' : ''}
       >
       <label class="event__offer-label" for="event-offer-${id}">
         <span class="event__offer-title">${text}</span>
@@ -26,8 +27,8 @@ const createOffersTemplate = (offers) => (
   }).join('')
 );
 
-const createOfferSectionTemplate = (offers) => {
-  const offersTemplate = createOffersTemplate(offers);
+const createOfferSectionTemplate = (offers, isDisabled) => {
+  const offersTemplate = createOffersTemplate(offers, isDisabled);
 
   return `<section class="event__section  event__section--offers">
     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
@@ -40,14 +41,16 @@ const createOfferSectionTemplate = (offers) => {
 
 export default class OffersComponent extends AbstractView {
   #offers = null;
+  #isDisabled = null;
 
-  constructor(offers) {
+  constructor(offers, isDisabled) {
     super();
 
     this.#offers = offers;
+    this.#isDisabled = isDisabled;
   }
 
   get template() {
-    return createOfferSectionTemplate(this.#offers);
+    return createOfferSectionTemplate(this.#offers, this.#isDisabled);
   }
 }
