@@ -202,16 +202,49 @@ export default class TripPresenter {
     }
   }
 
-  #onActionEventView = (actionType, sourceEvent, updateEvent, updateType) => {
+  #onActionEventView = async (actionType, sourceEvent, updateEvent, updateType) => {
+    let presenterOrigin = Array.from(this.#eventPresenter).filter((presenter) => {
+      if (presenter.event === sourceEvent) {
+        return true;
+      }
+    });
+
+    presenterOrigin = presenterOrigin[0];
+
+    if (presenterOrigin === undefined && this.#newEventForm.event === sourceEvent) {
+      presenterOrigin = this.#newEventForm;
+    }
+
     switch(actionType) {
       case UserAction.UPDATE_EVENT:
-        this.#eventsModel.updateEvent(sourceEvent, updateEvent, updateType);
+        presenterOrigin.setSavingState();
+
+        try {
+          await this.#eventsModel.updateEvent(sourceEvent, updateEvent, updateType);
+        } catch(err) {
+          presenterOrigin.setAbortingState();
+        }
+
         break;
       case UserAction.DELETE_EVENT:
-        this.#eventsModel.deleteEvent(sourceEvent, updateType);
+        presenterOrigin.setDeletingState();
+
+        try {
+          await this.#eventsModel.deleteEvent(sourceEvent, updateType);
+        } catch(err) {
+          presenterOrigin.setAbortingState();
+        }
+
         break;
       case UserAction.ADD_EVENT:
-        this.#eventsModel.addEvent(sourceEvent, updateEvent, updateType);
+        presenterOrigin.setSavingState();
+
+        try {
+          await this.#eventsModel.addEvent(sourceEvent, updateEvent, updateType);
+        } catch(err) {
+          presenterOrigin.setAbortingState();
+        }
+
         break;
     }
   }

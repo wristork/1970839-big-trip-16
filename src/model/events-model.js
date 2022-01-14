@@ -27,14 +27,18 @@ export default class EventsModel extends AbstractObservable {
     this._notify(UpdateType.INIT);
   }
 
-  addEvent(sourceEvent, event, updateType) {
+  addEvent = async (sourceEvent, newEvent, updateType) => {
     if (this.#events.has(sourceEvent)) {
       throw new Error('This trip event object already exist');
     }
 
-    this.#events.add(event);
-
-    this._notify(updateType, event);
+    try {
+      const response = await this.#apiService.addEvent(newEvent);
+      this.#events.add(this.#adaptToClient(response));
+      this._notify(updateType, newEvent);
+    } catch(err) {
+      throw new Error('Can\'t add new event.');
+    }
   }
 
   updateEvent = async (sourceEvent, updatedEvent, updateType) => {
@@ -45,22 +49,30 @@ export default class EventsModel extends AbstractObservable {
     try {
       this.#updateEvent(sourceEvent, updatedEvent);
 
-      await this.#apiService.updateEvent(sourceEvent);
+      const response = await this.#apiService.updateEvent(sourceEvent);
 
       this._notify(updateType, sourceEvent);
+
+      return response;
     } catch(err) {
       throw new Error('Can\'t update event');
     }
   }
 
-  deleteEvent(sourceEvent, updateType) {
+  deleteEvent = async (sourceEvent, updateType) => {
     if (!this.#events.has(sourceEvent)) {
       throw new Error('This trip event object does not exist in the model');
     }
 
-    this.#events.delete(sourceEvent);
+    try {
+      await this.#apiService.deleteEvent(sourceEvent);
 
-    this._notify(updateType, sourceEvent);
+      this.#events.delete(sourceEvent);
+
+      this._notify(updateType, sourceEvent);
+    } catch(err) {
+      throw new Error('Can\'t delete event');
+    }
   }
 
   #updateEvent = (target, donor) => {
