@@ -30,7 +30,7 @@ export default class ControlsPresenter {
   }
 
   get events() {
-    const events = getFilteredEventsByDate([...this.#eventsModel.events], this.#filterModel.filterType, new Date());
+    const events = getFilteredEventsByDate([...this.#eventsModel.events], this.filterType, new Date());
 
     return events.sort((a, b) => a.date.start - b.date.start);
   }
@@ -42,11 +42,15 @@ export default class ControlsPresenter {
   init() {
     this.#filtersComponent = new FiltersCompontent();
     this.#infoComponent = new InfoComponent();
-
-    this.#filtersComponent.eventLength = this.events.length;
   }
 
   renderControls() {
+    const futureEvents = getFilteredEventsByDate([...this.#eventsModel.events], FilterTypes.FUTURE, new Date());
+    const pastEvents = getFilteredEventsByDate([...this.#eventsModel.events], FilterTypes.PAST, new Date());
+
+    this.#filtersComponent.setFutureEventsLength(futureEvents.length);
+    this.#filtersComponent.setPastEventsLength(pastEvents.length);
+
     render(this.#controlsElement, this.#filtersComponent, RenderPosition.BEFOREEND);
 
     this.#filtersComponent.addChangeFilterHandler(this.#onFilterTypeChange);
@@ -95,8 +99,6 @@ export default class ControlsPresenter {
         this.renderInfo();
         break;
       case UpdateType.INIT:
-        this.#filtersComponent.eventLength = this.events.length;
-
         this.renderControls();
         this.renderInfo();
     }

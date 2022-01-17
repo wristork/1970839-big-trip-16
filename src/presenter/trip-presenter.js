@@ -198,7 +198,6 @@ export default class TripPresenter {
         this.#isLoading = false;
         remove(this.#loadingComponent);
         this.initNewForm();
-        this.renderEventList();
     }
   }
 
