@@ -1,9 +1,7 @@
 import AbstractView from './abstract-view';
 
-const createFilterTemplate = (length) => {
-  const disabledAttribute = length ? '' : 'disabled';
-
-  return `<div class="trip-controls__filters">
+const createFilterTemplate = (futureLength, pastLength) => (
+  `<div class="trip-controls__filters">
     <h2 class="visually-hidden">Filter events</h2>
     <form class="trip-filters" action="#" method="get">
       <div class="trip-filters__filter">
@@ -17,7 +15,7 @@ const createFilterTemplate = (length) => {
           class="trip-filters__filter-input  visually-hidden"
           type="radio"
           name="trip-filter"
-          value="future" ${disabledAttribute}>
+          value="future" ${futureLength === 0 ? 'disabled' : ''}>
         <label class="trip-filters__filter-label" for="filter-future">Future</label>
       </div>
 
@@ -27,29 +25,34 @@ const createFilterTemplate = (length) => {
           class="trip-filters__filter-input  visually-hidden"
           type="radio"
           name="trip-filter"
-          value="past" ${disabledAttribute}>
+          value="past" ${pastLength === 0 ? 'disabled' : ''}>
         <label class="trip-filters__filter-label" for="filter-past">Past</label>
       </div>
 
       <button class="visually-hidden" type="submit">Accept filter</button>
     </form>
-  </div>`;
-};
+  </div>`
+);
 
 export default class FiltersCompontent extends AbstractView {
-  #eventLength = 0;
+  #futureEventsLength = 0;
+  #pastEventsLength = 0;
   #callbacks = {};
 
+  constructor() {
+    super();
+  }
+
   get template() {
-    return createFilterTemplate(this.#eventLength);
+    return createFilterTemplate(this.#futureEventsLength, this.#pastEventsLength);
   }
 
-  get eventLength() {
-    return this.#eventLength;
+  setFutureEventsLength(value) {
+    this.#futureEventsLength = value;
   }
 
-  set eventLength(value) {
-    this.#eventLength = Math.max(0, value);
+  setPastEventsLength(value) {
+    this.#pastEventsLength = value;
   }
 
   addChangeFilterHandler(cb) {
