@@ -99,7 +99,7 @@ export default class TripPresenter {
 
       this.#renderEvents(this.events);
     } else {
-        render(this.#tripEventsElement, this.#noEventsComponent, RenderPosition.BEFOREEND);
+      render(this.#tripEventsElement, this.#noEventsComponent, RenderPosition.BEFOREEND);
     }
   }
 
