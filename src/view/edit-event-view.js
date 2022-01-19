@@ -304,6 +304,16 @@ export default class EditEventComponent extends SmartView {
     }
 
     this.updateData({ price: target.value }, true);
+
+    if (+target.value === 0) {
+      target.style.outlineColor = 'red';
+      target.style.border = '1px solid orangered';
+      this.#saveButtonElement.setAttribute('disabled', '');
+    } else {
+      target.style.outlineColor = null;
+      target.style.border = null;
+      this.#saveButtonElement.removeAttribute('disabled');
+    }
   };
 
   #onChangeDestination = (evt) => {
@@ -316,7 +326,7 @@ export default class EditEventComponent extends SmartView {
       target.value = '';
       target.style.outlineColor = 'red';
       target.style.border = '1px solid orangered';
-      this.#saveButtonElement.setAttribute('disabled', 'true');
+      this.#saveButtonElement.setAttribute('disabled', '');
     } else {
       target.style = null;
       this.#saveButtonElement.removeAttribute('disabled');
