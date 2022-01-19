@@ -222,6 +222,13 @@ export default class EditEventComponent extends SmartView {
     this.element.classList.toggle('shake');
   }
 
+  updateElement() {
+    super.updateElement();
+
+    this.removeDatePicker();
+    this.setDatePicker();
+  }
+
   #initDatePicker = () => {
     const startDatePicker = this.element.querySelector('#event-start-time-1');
     const endDatePicker = this.element.querySelector('#event-end-time-1');
