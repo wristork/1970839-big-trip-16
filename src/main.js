@@ -49,10 +49,8 @@ const changeScreen = (value) => {
       resetTabsStates();
       tabsElement.children[0].classList.add('trip-tabs__btn--active');
       remove(statsComponent);
-      tripPresenter.renderEventList();
-      controlsPresenter.renderControls();
-      controlsPresenter.redrawInfo();
       break;
+
     case MenuItems.TABLE:
       remove(statsComponent);
       tripPresenter.renderEventList();
@@ -77,6 +75,7 @@ newEventButtonElement.addEventListener('click', (evt) => {
   changeScreen(target.textContent);
 
   filterModel.setFilterType(FilterTypes.EVERYTHING, UpdateType.MAJOR);
+
   tripPresenter.resetSort();
   tripPresenter.resetEvents();
   tripPresenter.showCreateForm();
