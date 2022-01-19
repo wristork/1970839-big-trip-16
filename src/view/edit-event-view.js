@@ -248,6 +248,8 @@ export default class EditEventComponent extends SmartView {
       }
     });
 
+    this.#startDatePicker.setDate(this._data.date.start, false);
+
     this.#endDatePicker = flatpickr(endDatePicker, {...commonConfig,
       minDate: this._data.date.start,
       onChange: (selectedDates) => {
@@ -262,6 +264,8 @@ export default class EditEventComponent extends SmartView {
         );
       }
     });
+
+    this.#endDatePicker.setDate(this._data.date.end, false);
   }
 
   #setInnerHandlers = () => {
