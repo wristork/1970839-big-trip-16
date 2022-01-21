@@ -227,6 +227,8 @@ export default class EditEventComponent extends SmartView {
 
     this.removeDatePicker();
     this.setDatePicker();
+
+    this.#saveButtonElement = this.element.querySelector('.event__save-btn');
   }
 
   #initDatePicker = () => {
@@ -277,7 +279,7 @@ export default class EditEventComponent extends SmartView {
 
   #setInnerHandlers = () => {
     this.element.querySelector('.event__type-list').addEventListener('click', this.#onChangeEventType);
-    this.element.querySelector('.event__field-group--destination').addEventListener('change', this.#onChangeDestination);
+    this.element.querySelector('.event__field-group--destination').addEventListener('input', this.#onChangeDestination);
     this.element.querySelector('.event__input--price').addEventListener('input', this.#onInputPrice);
 
     const offerContainer = this.element.querySelector('.event__available-offers');
@@ -333,15 +335,16 @@ export default class EditEventComponent extends SmartView {
     if (target.tagName !== 'INPUT') {
       return;
     }
+
+    target.style = null;
+    this.#saveButtonElement.removeAttribute('disabled');
+
     if (!~Array.from(this.#destinations.keys()).indexOf(target.value)) {
       target.value = '';
       target.style.outlineColor = 'red';
       target.style.border = '1px solid orangered';
       this.#saveButtonElement.setAttribute('disabled', '');
     } else {
-      target.style = null;
-      this.#saveButtonElement.removeAttribute('disabled');
-
       this.updateData({ destination: this.#destinations.get(target.value) });
     }
   };
