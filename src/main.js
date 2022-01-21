@@ -16,10 +16,6 @@ import ApiService from './api-service';
 const END_POINT = 'https://16.ecmascript.pages.academy/big-trip';
 const AUTHORIZATION = 'Basic 161121jswristork020222';
 
-const newEventButtonElement = document.querySelector('.trip-main__event-add-btn');
-const tabsElement = document.querySelector('.trip-tabs');
-const statsComponent = new StatsComponent();
-
 const apiService = new ApiService(END_POINT, AUTHORIZATION);
 
 const destinationsModel = new DestinationsModel(apiService);
@@ -27,15 +23,9 @@ const offersModel = new OffersModel(apiService);
 const eventsModel = new EventsModel(apiService);
 const filterModel = new FilterModel();
 
-const tripPresenter = new TripPresenter(
-  document.querySelector('.trip-events'),
-  eventsModel,
-  filterModel,
-  destinationsModel,
-  offersModel,
-  { satellites: { newEventButtonElement }, }
-);
-const controlsPresenter = new ControlsPresenter(document.querySelector('.trip-controls'), filterModel, eventsModel);
+const newEventButtonElement = document.querySelector('.trip-main__event-add-btn');
+const tabsElement = document.querySelector('.trip-tabs');
+const statsComponent = new StatsComponent();
 
 const resetTabsStates = () => {
   for (const child of tabsElement.children) {
@@ -68,6 +58,16 @@ const changeScreen = (value) => {
 
   newEventButtonElement.removeAttribute('disabled');
 };
+
+const tripPresenter = new TripPresenter(
+  document.querySelector('.trip-events'),
+  eventsModel,
+  filterModel,
+  destinationsModel,
+  offersModel,
+  { satellites: { newEventButtonElement }, }
+);
+const controlsPresenter = new ControlsPresenter(document.querySelector('.trip-controls'), filterModel, eventsModel);
 
 newEventButtonElement.addEventListener('click', (evt) => {
   const { target } = evt;
