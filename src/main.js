@@ -27,6 +27,20 @@ const newEventButtonElement = document.querySelector('.trip-main__event-add-btn'
 const tabsElement = document.querySelector('.trip-tabs');
 const statsComponent = new StatsComponent();
 
+const tripPresenter = new TripPresenter(
+  document.querySelector('.trip-events'),
+  eventsModel,
+  filterModel,
+  destinationsModel,
+  offersModel,
+  { satellites: { newEventButtonElement }, }
+);
+const controlsPresenter = new ControlsPresenter(
+  document.querySelector('.trip-controls'),
+  filterModel,
+  eventsModel
+);
+
 const resetTabsStates = () => {
   for (const child of tabsElement.children) {
     child.classList.remove('trip-tabs__btn--active');
@@ -58,16 +72,6 @@ const changeScreen = (value) => {
 
   newEventButtonElement.removeAttribute('disabled');
 };
-
-const tripPresenter = new TripPresenter(
-  document.querySelector('.trip-events'),
-  eventsModel,
-  filterModel,
-  destinationsModel,
-  offersModel,
-  { satellites: { newEventButtonElement }, }
-);
-const controlsPresenter = new ControlsPresenter(document.querySelector('.trip-controls'), filterModel, eventsModel);
 
 newEventButtonElement.addEventListener('click', (evt) => {
   const { target } = evt;
