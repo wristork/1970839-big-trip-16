@@ -21,10 +21,10 @@ export default class TripPresenter {
   #noEventsComponent = null;
   #loadingComponent = null;
 
-  #eventListElement = null;
+  #tripEventsElement = null;
 
   #satellites = null;
-  #newEventForm = null;
+  #newEventPresenter = null;
 
   #eventsModel = null;
   #filterModel = null;
@@ -37,8 +37,8 @@ export default class TripPresenter {
 
   #isLoading = true;
 
-  constructor(eventListElement, eventsModel, filterModel, destinationsModel, offersModel, options = {}) {
-    this.#eventListElement = eventListElement;
+  constructor(tripEventsElement, eventsModel, filterModel, destinationsModel, offersModel, options = {}) {
+    this.#tripEventsElement = tripEventsElement;
     this.#satellites = options?.satellites;
     this.#eventsModel = eventsModel;
     this.#filterModel = filterModel;
@@ -72,10 +72,12 @@ export default class TripPresenter {
     this.#eventSorterComponent = new EventSorterComponent();
     this.#loadingComponent = new LoadingComponent();
     this.#noEventsComponent = new noEventsComponent(this.#filterModel.filterType);
+
+    render(this.#tripEventsElement, this.#eventListComponent, RenderPosition.BEFOREEND);
   }
 
   initNewForm() {
-    this.#newEventForm = new EventPresenter(
+    this.#newEventPresenter = new EventPresenter(
       this.#eventListComponent,
       this.#onActionEventView,
       this.#onChangeEventMode,
@@ -86,26 +88,26 @@ export default class TripPresenter {
 
   renderEventList() {
     if (this.#isLoading) {
-      render(this.#eventListElement, this.#loadingComponent, RenderPosition.BEFOREEND);
+      render(this.#tripEventsElement, this.#loadingComponent, RenderPosition.BEFOREEND);
       return;
     }
 
     if (this.events.length) {
-      render(this.#eventListElement, this.#eventSorterComponent, RenderPosition.BEFOREEND);
-      render(this.#eventListElement, this.#eventListComponent, RenderPosition.BEFOREEND);
+      render(this.#tripEventsElement, this.#eventSorterComponent, RenderPosition.AFTERBEGIN);
 
       this.#eventSorterComponent.addChangeSortTypeHandler(this.#changeSortEvent);
 
       this.#renderEvents(this.events);
     } else {
-      render(this.#eventListElement, this.#noEventsComponent, RenderPosition.BEFOREEND);
+      render(this.#tripEventsElement, this.#noEventsComponent, RenderPosition.BEFOREEND);
     }
   }
 
   clearEventList() {
     this.#clearEvents();
 
-    remove(this.#eventListComponent);
+    this.#newEventPresenter.destroy();
+
     remove(this.#eventSorterComponent);
     remove(this.#noEventsComponent);
 
@@ -121,11 +123,16 @@ export default class TripPresenter {
   }
 
   showCreateForm() {
-    this.#newEventForm.init();
+    this.#newEventPresenter.init();
+    remove(this.#noEventsComponent);
   }
 
   closeCreateForm() {
-    this.#newEventForm.destroy();
+    this.#newEventPresenter.destroy();
+
+    if (!this.events.length) {
+      render(this.#tripEventsElement, this.#noEventsComponent, RenderPosition.BEFOREEND);
+    }
   }
 
   resetEvents = () => {
@@ -210,8 +217,8 @@ export default class TripPresenter {
 
     presenterOrigin = presenterOrigin[0];
 
-    if (presenterOrigin === undefined && this.#newEventForm.event === sourceEvent) {
-      presenterOrigin = this.#newEventForm;
+    if (presenterOrigin === undefined && this.#newEventPresenter.event === sourceEvent) {
+      presenterOrigin = this.#newEventPresenter;
     }
 
     switch(actionType) {

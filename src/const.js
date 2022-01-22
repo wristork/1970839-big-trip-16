@@ -1,7 +1,7 @@
 export const ROUTES = [
   'check-in', 'sightseeing', 'restaurant',
   'taxi', 'bus', 'train',
-  'ship', 'drive', 'flight'
+  'ship', 'drive', 'flight',
 ];
 
 export const DESTINATIONS = [
@@ -12,7 +12,7 @@ export const DESTINATIONS = [
   'Minsk',
   'Kiev',
   'Warsaw',
-  'Melbourne'
+  'Melbourne',
 ];
 
 export const OFFERS = [
@@ -26,7 +26,7 @@ export const OFFERS = [
 export const UserAction = {
   UPDATE_EVENT: 'UPDATE_EVENT',
   DELETE_EVENT: 'DELETE_EVENT',
-  ADD_EVENT: 'ADD_EVENT'
+  ADD_EVENT: 'ADD_EVENT',
 };
 
 export const UpdateType = {
@@ -39,7 +39,7 @@ export const UpdateType = {
 export const FilterTypes = {
   EVERYTHING: 'everything',
   FUTURE: 'future',
-  PAST: 'past'
+  PAST: 'past',
 };
 
 export const MenuItems = {

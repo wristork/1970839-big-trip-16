@@ -12,7 +12,7 @@ const BLANK_EVENT = {
   },
   routeType: '',
   isFavorite: false,
-  price: 0,
+  price: 50,
   destination: null,
   offers: null,
   isBlank: true,

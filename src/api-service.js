@@ -83,6 +83,16 @@ export default class ApiService {
   }
 
   #adaptToServer = (event) => {
+    const offers = [...event.offers].map((offer) => {
+      const adaptedOffer = {...offer,
+        'is_checked': offer.isChecked || false
+      };
+
+      delete adaptedOffer['isChecked'];
+
+      return adaptedOffer;
+    });
+
     const adaptedEvent = {...event,
       'base_price': event.price,
       'date_from': event.date.start,
@@ -94,6 +104,7 @@ export default class ApiService {
       },
       'is_favorite': event.isFavorite,
       'type': event.routeType,
+      'offers': offers
     };
 
     delete adaptedEvent['price'];

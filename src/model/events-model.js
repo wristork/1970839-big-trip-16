@@ -86,6 +86,16 @@ export default class EventsModel extends AbstractObservable {
   }
 
   #adaptToClient = (event) => {
+    const offers = [...event.offers].map((offer) => {
+      const adaptedOffer = {...offer,
+        isChecked: offer['is_checked'] || false
+      };
+
+      delete adaptedOffer['is_checked'];
+
+      return adaptedOffer;
+    });
+
     const adaptedEvent = {...event,
       price: event['base_price'],
       routeType: event['type'],
@@ -98,7 +108,8 @@ export default class EventsModel extends AbstractObservable {
         place: event.destination.name,
         description: event.destination.description,
         images: event.destination.pictures
-      }
+      },
+      offers: offers
     };
 
     delete adaptedEvent['base_price'];
