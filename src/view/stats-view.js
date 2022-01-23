@@ -27,7 +27,7 @@ const createStatsTemplate = () => (
 const BAR_HEIGHT = 55;
 const ADD_ROW = 1;
 
-export default class StatsComponent extends AbstractView {
+export default class StatsView extends AbstractView {
   get template() {
     return createStatsTemplate();
   }

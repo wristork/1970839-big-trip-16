@@ -25,7 +25,7 @@ const createDestinationSectionTemplate = ({description, images}) => {
     : '';
 };
 
-export default class DestinationComponent extends AbstractView {
+export default class DestinationView extends AbstractView {
   #destination = null;
 
   constructor(event) {

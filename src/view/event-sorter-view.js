@@ -27,7 +27,7 @@ const createEventSorterTemplate = () => (`<form class="trip-events__trip-sort  t
   </div>
 </form>`);
 
-export default class EventSorterComponent extends AbstractView {
+export default class EventSorterView extends AbstractView {
   #callbacks = {};
 
   get template() {

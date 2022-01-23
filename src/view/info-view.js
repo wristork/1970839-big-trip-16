@@ -62,7 +62,7 @@ const createTripInfoTemplate = (events) => {
   </section>`;
 };
 
-export default class InfoComponent extends AbstractView {
+export default class InfoView extends AbstractView {
   #events = [];
 
   get template() {

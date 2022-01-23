@@ -75,7 +75,7 @@ const createEventTemplate = (event = {}) => {
   </li>`;
 };
 
-export default class EventComponent extends AbstractView {
+export default class EventView extends AbstractView {
   #event = null;
   #callbacks = {};
 

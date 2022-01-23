@@ -34,7 +34,7 @@ const createFilterTemplate = (futureLength, pastLength) => (
   </div>`
 );
 
-export default class FiltersCompontent extends AbstractView {
+export default class FiltersView extends AbstractView {
   #futureEventsLength = 0;
   #pastEventsLength = 0;
   #callbacks = {};

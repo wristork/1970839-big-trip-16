@@ -2,12 +2,12 @@ import { render, RenderPosition, remove } from '../render';
 import { UpdateType, FilterTypes } from '../const';
 import { getFilteredEventsByDate } from '../utils/common';
 
-import InfoComponent from '../view/info-view';
-import FiltersCompontent from '../view/filters';
+import InfoView from '../view/info-view';
+import FiltersView from '../view/filters-view';
 
 export default class ControlsPresenter {
-  #filtersComponent = null;
-  #infoComponent = null;
+  #filtersView = null;
+  #infoView = null;
 
   #controlsElement = null;
 
@@ -40,37 +40,37 @@ export default class ControlsPresenter {
   }
 
   init() {
-    this.#filtersComponent = new FiltersCompontent();
-    this.#infoComponent = new InfoComponent();
+    this.#filtersView = new FiltersView();
+    this.#infoView = new InfoView();
   }
 
   renderControls() {
     const futureEvents = getFilteredEventsByDate([...this.#eventsModel.events], FilterTypes.FUTURE, new Date());
     const pastEvents = getFilteredEventsByDate([...this.#eventsModel.events], FilterTypes.PAST, new Date());
 
-    this.#filtersComponent.setFutureEventsLength(futureEvents.length);
-    this.#filtersComponent.setPastEventsLength(pastEvents.length);
+    this.#filtersView.setFutureEventsLength(futureEvents.length);
+    this.#filtersView.setPastEventsLength(pastEvents.length);
 
-    render(this.#controlsElement, this.#filtersComponent, RenderPosition.BEFOREEND);
+    render(this.#controlsElement, this.#filtersView, RenderPosition.BEFOREEND);
 
-    this.#filtersComponent.addChangeFilterHandler(this.#onFilterTypeChange);
+    this.#filtersView.addChangeFilterHandler(this.#onFilterTypeChange);
   }
 
   renderInfo() {
-    this.#infoComponent.events = this.events;
+    this.#infoView.events = this.events;
 
     if (this.events.length) {
-      render(this.#controlsElement, this.#infoComponent, RenderPosition.BEFOREBEGIN);
+      render(this.#controlsElement, this.#infoView, RenderPosition.BEFOREBEGIN);
     }
   }
 
   clearControls() {
     this.#filterModel.setFilterType(FilterTypes.EVERYTHING);
-    remove(this.#filtersComponent);
+    remove(this.#filtersView);
   }
 
   clearInfo() {
-    remove(this.#infoComponent);
+    remove(this.#infoView);
   }
 
   redrawInfo() {
@@ -81,7 +81,7 @@ export default class ControlsPresenter {
   #onFilterTypeChange = (filterType) => {
     this.#filterModel.setFilterType(filterType, UpdateType.MINOR);
 
-    this.#infoComponent.events = this.events;
+    this.#infoView.events = this.events;
 
     this.redrawInfo();
   };

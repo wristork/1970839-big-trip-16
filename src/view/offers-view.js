@@ -39,7 +39,7 @@ const createOfferSectionTemplate = (offers, isDisabled) => {
   </section>`;
 };
 
-export default class OffersComponent extends AbstractView {
+export default class OffersView extends AbstractView {
   #offers = null;
   #isDisabled = null;
 

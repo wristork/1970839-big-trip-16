@@ -5,7 +5,7 @@ import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 import '../../node_modules/flatpickr/dist/themes/material_blue.css';
 
 import SmartView from './smart-view';
-import DetailsComponent from './event-details-view';
+import DetailsView from './event-details-view';
 
 import { getFormattedDate } from '../utils/date';
 
@@ -48,7 +48,7 @@ const createEditEventTemplate = (data, destinations, offerTypes) => {
   const destinationOptionsTemplate = createDestinationOptionsTemplate(destinations);
 
   const detailsTemplate = (isHaveDescription || isHaveImages || isHaveOffers)
-    ? new DetailsComponent(offers, destination, isDisabled).template
+    ? new DetailsView(offers, destination, isDisabled).template
     : '';
 
   const deleteText = isDeleting ? 'Deleting...' : 'Delete';
@@ -137,7 +137,7 @@ const createEditEventTemplate = (data, destinations, offerTypes) => {
   </li>`;
 };
 
-export default class EditEventComponent extends SmartView {
+export default class EditEventView extends SmartView {
   #callbacks = {};
   #startDatePicker = null;
   #endDatePicker = null;
@@ -152,7 +152,7 @@ export default class EditEventComponent extends SmartView {
     this.#destinations = new Map(destinations.map((destination) => [destination.place, destination]));
     this.#offers = new Map(offers.map((offer) => [offer.type, offer]));
 
-    this._data = EditEventComponent.parseEventToData(event);
+    this._data = EditEventView.parseEventToData(event);
     this.#saveButtonElement = this.element.querySelector('.event__save-btn');
 
     this.#setInnerHandlers();
@@ -199,7 +199,7 @@ export default class EditEventComponent extends SmartView {
   }
 
   resetState(event) {
-    this.updateData(EditEventComponent.parseEventToData(event));
+    this.updateData(EditEventView.parseEventToData(event));
   }
 
   setDatePicker() {
@@ -296,7 +296,7 @@ export default class EditEventComponent extends SmartView {
   #onFormSubmit = (evt) => {
     evt.preventDefault();
 
-    this.#callbacks.formSubmit(EditEventComponent.parseDataToEvent(this._data));
+    this.#callbacks.formSubmit(EditEventView.parseDataToEvent(this._data));
   };
 
   #onClickResetButton = () => {

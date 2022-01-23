@@ -10,7 +10,7 @@ const noEventMessages = {
 
 const createEmptyMessageTemplate = (text) => `<p class="trip-events__msg">${text}</p>`;
 
-export default class NoEventsComponent extends AbstractView {
+export default class NoEventsView extends AbstractView {
   #filterType = null;
 
   constructor(filterType = FilterTypes.EVERYTHING) {
