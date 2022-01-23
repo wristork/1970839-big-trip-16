@@ -34,19 +34,13 @@ export default class ApiService {
       headers: new Headers({ 'Content-Type': 'application/json' })
     });
 
-    const parsedResponse = await ApiService.parseResponse(response);
-
-    return parsedResponse;
+    return await ApiService.parseResponse(response);
   }
 
-  deleteEvent = async (event) => {
-    const response = await this.#load({
-      url: `points/${event.id}`,
-      method: Method.DELETE,
-    });
-
-    return response;
-  }
+  deleteEvent = async (event) => await this.#load({
+    url: `points/${event.id}`,
+    method: Method.DELETE,
+  })
 
   updateEvent = async (event) => {
     const response = await this.#load({
@@ -56,9 +50,7 @@ export default class ApiService {
       headers: new Headers({ 'Content-Type': 'application/json' }),
     });
 
-    const parsedResponse = await ApiService.parseResponse(response);
-
-    return parsedResponse;
+    return await ApiService.parseResponse(response);
   }
 
   #load = async ({
@@ -121,9 +113,9 @@ export default class ApiService {
     if (!response.ok) {
       throw new Error(`${response.status}: ${response.statusText}`);
     }
-  };
+  }
 
   static catchError = (err) => {
     throw err;
-  };
+  }
 }
