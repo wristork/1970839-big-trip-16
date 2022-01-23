@@ -94,7 +94,6 @@ export default class StatsView extends AbstractView {
 
   #initChart = (container, title, data, formatterCallback) => {
     const heightFactor = data.length + ADD_ROW;
-
     container.height = BAR_HEIGHT * heightFactor;
     data.sort((a, b) => b[1].value - a[1].value);
 

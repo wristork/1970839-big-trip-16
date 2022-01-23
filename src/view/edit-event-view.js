@@ -11,14 +11,19 @@ import { getFormattedDate } from '../utils/date';
 
 const createRoutesTemplate = (offerTypes) => (
   offerTypes.map((type) => {
-    const typeLower = type.toLowerCase();
+    const typeLowerCase = type.toLowerCase();
 
     return `<div class="event__type-item">
-      <input id="event-type-${typeLower}-1"
+      <input id="event-type-${typeLowerCase}-1"
         class="event__type-input  visually-hidden"
         type="radio" name="event-type"
         value="${type}">
-      <label class="event__type-label  event__type-label--${typeLower}" for="event-type-${typeLower}-1">${type[0].toUpperCase() + type.slice(1)}</label>
+      <label
+        class="event__type-label  event__type-label--${typeLowerCase}"
+        for="event-type-${typeLowerCase}-1"
+      >
+        ${type[0].toUpperCase() + type.slice(1)}
+      </label>
     </div>`;
   }).join('')
 );
@@ -43,10 +48,6 @@ const createEditEventTemplate = (data, destinations, offerTypes) => {
     isDisabled
   } = data;
 
-  const iconName = routeType.toLowerCase();
-  const routesTemplate = createRoutesTemplate(offerTypes);
-  const destinationOptionsTemplate = createDestinationOptionsTemplate(destinations);
-
   const detailsTemplate = (isHaveDescription || isHaveImages || isHaveOffers)
     ? new DetailsView(offers, destination, isDisabled).template
     : '';
@@ -66,7 +67,7 @@ const createEditEventTemplate = (data, destinations, offerTypes) => {
         <div class="event__type-wrapper">
           <label class="event__type  event__type-btn" for="event-type-toggle-1">
             <span class="visually-hidden">Choose event type</span>
-            <img class="event__type-icon" width="17" height="17" src="img/icons/${iconName}.png" alt="Event type icon">
+            <img class="event__type-icon" width="17" height="17" src="img/icons/${routeType.toLowerCase()}.png" alt="Event type icon">
           </label>
           <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
@@ -74,7 +75,7 @@ const createEditEventTemplate = (data, destinations, offerTypes) => {
             <fieldset class="event__type-group">
               <legend class="visually-hidden">Event type</legend>
 
-              ${routesTemplate}
+              ${createRoutesTemplate(offerTypes)}
             </fieldset>
           </div>
         </div>
@@ -91,7 +92,7 @@ const createEditEventTemplate = (data, destinations, offerTypes) => {
             ${isDisabled ? 'disabled' : ''}
           >
           <datalist id="destination-list-1">
-            ${destinationOptionsTemplate}
+            ${createDestinationOptionsTemplate(destinations)}
           </datalist>
         </div>
 
@@ -238,7 +239,7 @@ export default class EditEventView extends SmartView {
     const commonConfig = {
       dateFormat: 'd/m/Y H:i',
       enableTime: true,
-      ['time_24hr']: true
+      ['time_24hr']: true,
     };
 
     this.#startDatePicker = flatpickr(startDatePicker, {...commonConfig,
@@ -247,10 +248,10 @@ export default class EditEventView extends SmartView {
           {
             date: {
               start: selectedDates[0],
-              end: this._data.date.end
+              end: this._data.date.end,
             }
           },
-          true
+          true,
         );
 
         this.#endDatePicker.set('minDate', selectedDates[0]);
@@ -266,10 +267,10 @@ export default class EditEventView extends SmartView {
           {
             date: {
               start: this._data.date.start,
-              end: selectedDates[0]
+              end: selectedDates[0],
             }
           },
-          true
+          true,
         );
       }
     });
@@ -318,14 +319,10 @@ export default class EditEventView extends SmartView {
 
     this.updateData({ price: target.value }, true);
 
-    if (+target.value === 0) {
-      target.style.outlineColor = 'red';
-      target.style.border = '1px solid orangered';
-      this.#saveButtonElement.setAttribute('disabled', '');
-    } else {
-      target.style.outlineColor = null;
-      target.style.border = null;
-      this.#saveButtonElement.removeAttribute('disabled');
+    this.#activeSaveButtuon(target);
+
+    if (Number(target.value) === 0) {
+      this.#disableSaveButton(target);
     }
   };
 
@@ -336,18 +333,30 @@ export default class EditEventView extends SmartView {
       return;
     }
 
-    target.style = null;
-    this.#saveButtonElement.removeAttribute('disabled');
+    this.#activeSaveButtuon(target);
 
     if (!~Array.from(this.#destinations.keys()).indexOf(target.value)) {
       target.value = '';
-      target.style.outlineColor = 'red';
-      target.style.border = '1px solid orangered';
-      this.#saveButtonElement.setAttribute('disabled', '');
+      this.#disableSaveButton(target);
     } else {
       this.updateData({ destination: this.#destinations.get(target.value) });
     }
   };
+
+  #disableSaveButton = (element) => {
+    if (element) {
+      element.style.outlineColor = 'red';
+      element.style.border = '1px solid orangered';
+    }
+
+    this.#saveButtonElement.setAttribute('disabled', '');
+  }
+
+  #activeSaveButtuon = (element) => {
+    element.style = null;
+
+    this.#saveButtonElement.removeAttribute('disabled');
+  }
 
   #onChangeEventType = (evt) => {
     const { target } = evt;

@@ -1,19 +1,16 @@
 import AbstractView from './abstract-view';
-
 import DestinationView from './destination-view';
 import OffersView from './offers-view';
 
 const createDetailsTemplate = (offers, destination, isDisabled) => {
-  const offerSectionTemplate = (offers !== null && offers.length)
+  const offersTemplate = (offers !== null && offers.length)
     ? new OffersView(offers, isDisabled).template
     : '';
 
-  const destinationSectionTemplate = new DestinationView(destination).template;
-
   return `<section class="event__details">
-    ${offerSectionTemplate}
+    ${offersTemplate}
 
-    ${destinationSectionTemplate}
+    ${new DestinationView(destination).template}
   </section>`;
 };
 
