@@ -2,7 +2,7 @@ import AbstractView from './abstract-view';
 import DestinationView from './destination-view';
 import OffersView from './offers-view';
 
-const createDetailsTemplate = (offers, destination, isDisabled) => {
+const createEventDetailsTemplate = (offers, destination, isDisabled) => {
   const offersTemplate = (offers !== null && offers.length)
     ? new OffersView(offers, isDisabled).template
     : '';
@@ -14,7 +14,7 @@ const createDetailsTemplate = (offers, destination, isDisabled) => {
   </section>`;
 };
 
-export default class DetailsView extends AbstractView {
+export default class EventDetailsView extends AbstractView {
   #offers = null;
   #destination = null;
   #isDisabled = null;
@@ -28,6 +28,6 @@ export default class DetailsView extends AbstractView {
   }
 
   get template() {
-    return createDetailsTemplate(this.#offers, this.#destination, this.#isDisabled);
+    return createEventDetailsTemplate(this.#offers, this.#destination, this.#isDisabled);
   }
 }
