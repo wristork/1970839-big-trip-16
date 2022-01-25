@@ -1,23 +1,20 @@
 import AbstractView from './abstract-view';
-
-import DestinationComponent from './destination-view';
-import OffersComponent from './offers-view';
+import DestinationView from './destination-view';
+import OffersView from './offers-view';
 
 const createDetailsTemplate = (offers, destination, isDisabled) => {
-  const offerSectionTemplate = (offers !== null && offers.length)
-    ? new OffersComponent(offers, isDisabled).template
+  const offersTemplate = (offers !== null && offers.length)
+    ? new OffersView(offers, isDisabled).template
     : '';
 
-  const destinationSectionTemplate = new DestinationComponent(destination).template;
-
   return `<section class="event__details">
-    ${offerSectionTemplate}
+    ${offersTemplate}
 
-    ${destinationSectionTemplate}
+    ${new DestinationView(destination).template}
   </section>`;
 };
 
-export default class DetailsComponent extends AbstractView {
+export default class DetailsView extends AbstractView {
   #offers = null;
   #destination = null;
   #isDisabled = null;

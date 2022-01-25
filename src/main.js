@@ -4,11 +4,11 @@ import { MenuItems, UpdateType, FilterTypes } from './const';
 import TripPresenter from './presenter/trip-presenter';
 import ControlsPresenter from './presenter/controls-presenter';
 
-import StatsComponent from './view/stats-view';
+import StatsView from './view/stats-view';
 
 import EventsModel from './model/events-model';
 import FilterModel from './model/filter-model';
-import DestinationsModel from './model/destination-model';
+import DestinationsModel from './model/destinations-model';
 import OffersModel from './model/offers-model';
 
 import ApiService from './api-service';
@@ -25,7 +25,7 @@ const filterModel = new FilterModel();
 
 const newEventButtonElement = document.querySelector('.trip-main__event-add-btn');
 const tabsElement = document.querySelector('.trip-tabs');
-const statsComponent = new StatsComponent();
+const statsView = new StatsView();
 
 const tripPresenter = new TripPresenter(
   document.querySelector('.trip-events'),
@@ -52,11 +52,11 @@ const changeScreen = (value) => {
     case MenuItems.ADD_NEW:
       resetTabsStates();
       tabsElement.children[0].classList.add('trip-tabs__btn--active');
-      remove(statsComponent);
+      remove(statsView);
       break;
 
     case MenuItems.TABLE:
-      remove(statsComponent);
+      remove(statsView);
       tripPresenter.renderEventList();
       controlsPresenter.renderControls();
       controlsPresenter.redrawInfo();
@@ -65,8 +65,8 @@ const changeScreen = (value) => {
     case MenuItems.STATS:
       tripPresenter.clearEventList();
       controlsPresenter.clearControls();
-      render(document.querySelector('.trip-events'), statsComponent, RenderPosition.BEFOREEND);
-      statsComponent.renderStats(eventsModel.events);
+      render(document.querySelector('.trip-events'), statsView, RenderPosition.BEFOREEND);
+      statsView.renderStats(eventsModel.events);
       break;
   }
 

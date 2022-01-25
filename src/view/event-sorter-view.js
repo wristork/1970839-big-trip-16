@@ -27,7 +27,7 @@ const createEventSorterTemplate = () => (`<form class="trip-events__trip-sort  t
   </div>
 </form>`);
 
-export default class EventSorterComponent extends AbstractView {
+export default class EventSorterView extends AbstractView {
   #callbacks = {};
 
   get template() {
@@ -36,6 +36,7 @@ export default class EventSorterComponent extends AbstractView {
 
   addChangeSortTypeHandler(cb) {
     this.#callbacks.changeSortType = cb;
+
     this.element.addEventListener('click', this.#onChangeSortType);
   }
 
@@ -47,9 +48,7 @@ export default class EventSorterComponent extends AbstractView {
     this.#resetCheckedInput();
     target.setAttribute('checked', '');
 
-    const sortType = target.value;
-
-    this.#callbacks.changeSortType(sortType);
+    this.#callbacks.changeSortType(target.value);
   }
 
   #resetCheckedInput = () => {

@@ -2,10 +2,10 @@ import { render, RenderPosition, remove } from '../render';
 import { UserAction, UpdateType } from '../const';
 import { getFilteredEventsByDate } from '../utils/common';
 
-import EventSorterComponent from '../view/event-sorter-view';
-import EventListComponent from '../view/event-list-view';
-import noEventsComponent from '../view/no-events-view';
-import LoadingComponent from '../view/loading-view';
+import EventSorterView from '../view/event-sorter-view';
+import EventListView from '../view/event-list-view';
+import noEventsView from '../view/no-events-view';
+import LoadingView from '../view/loading-view';
 
 import EventPresenter from './event-presenter';
 
@@ -16,10 +16,10 @@ const SortType = {
 };
 
 export default class TripPresenter {
-  #eventListComponent = null;
-  #eventSorterComponent = null;
-  #noEventsComponent = null;
-  #loadingComponent = null;
+  #eventListView = null;
+  #eventSorterView = null;
+  #noEventsView = null;
+  #loadingView = null;
 
   #tripEventsElement = null;
 
@@ -68,17 +68,17 @@ export default class TripPresenter {
   }
 
   init() {
-    this.#eventListComponent = new EventListComponent();
-    this.#eventSorterComponent = new EventSorterComponent();
-    this.#loadingComponent = new LoadingComponent();
-    this.#noEventsComponent = new noEventsComponent(this.#filterModel.filterType);
+    this.#eventListView = new EventListView();
+    this.#eventSorterView = new EventSorterView();
+    this.#loadingView = new LoadingView();
+    this.#noEventsView = new noEventsView(this.#filterModel.filterType);
 
-    render(this.#tripEventsElement, this.#eventListComponent, RenderPosition.BEFOREEND);
+    render(this.#tripEventsElement, this.#eventListView, RenderPosition.BEFOREEND);
   }
 
   initNewForm() {
     this.#newEventPresenter = new EventPresenter(
-      this.#eventListComponent,
+      this.#eventListView,
       this.#onActionEventView,
       this.#onChangeEventMode,
       this.#destinationsModel.destinations,
@@ -88,18 +88,18 @@ export default class TripPresenter {
 
   renderEventList() {
     if (this.#isLoading) {
-      render(this.#tripEventsElement, this.#loadingComponent, RenderPosition.BEFOREEND);
+      render(this.#tripEventsElement, this.#loadingView, RenderPosition.BEFOREEND);
       return;
     }
 
     if (this.events.length) {
-      render(this.#tripEventsElement, this.#eventSorterComponent, RenderPosition.AFTERBEGIN);
+      render(this.#tripEventsElement, this.#eventSorterView, RenderPosition.AFTERBEGIN);
 
-      this.#eventSorterComponent.addChangeSortTypeHandler(this.#changeSortEvent);
+      this.#eventSorterView.addChangeSortTypeHandler(this.#changeSortEvent);
 
       this.#renderEvents(this.events);
     } else {
-      render(this.#tripEventsElement, this.#noEventsComponent, RenderPosition.BEFOREEND);
+      render(this.#tripEventsElement, this.#noEventsView, RenderPosition.BEFOREEND);
     }
   }
 
@@ -108,8 +108,8 @@ export default class TripPresenter {
 
     this.#newEventPresenter.destroy();
 
-    remove(this.#eventSorterComponent);
-    remove(this.#noEventsComponent);
+    remove(this.#eventSorterView);
+    remove(this.#noEventsView);
 
     this.#satellites.newEventButtonElement.removeAttribute('disabled');
     this.#sortType = SortType.DAY;
@@ -124,14 +124,14 @@ export default class TripPresenter {
 
   showCreateForm() {
     this.#newEventPresenter.init();
-    remove(this.#noEventsComponent);
+    remove(this.#noEventsView);
   }
 
   closeCreateForm() {
     this.#newEventPresenter.destroy();
 
     if (!this.events.length) {
-      render(this.#tripEventsElement, this.#noEventsComponent, RenderPosition.BEFOREEND);
+      render(this.#tripEventsElement, this.#noEventsView, RenderPosition.BEFOREEND);
     }
   }
 
@@ -145,7 +145,7 @@ export default class TripPresenter {
   #renderEvents = (events) => {
     for (let i = 0; i < events.length; i++) {
       const event = new EventPresenter(
-        this.#eventListComponent,
+        this.#eventListView,
         this.#onActionEventView,
         this.#onChangeEventMode,
         this.#destinationsModel.destinations,
@@ -203,7 +203,7 @@ export default class TripPresenter {
         break;
       case UpdateType.INIT:
         this.#isLoading = false;
-        remove(this.#loadingComponent);
+        remove(this.#loadingView);
         this.initNewForm();
     }
   }

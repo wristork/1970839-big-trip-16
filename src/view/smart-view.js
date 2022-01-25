@@ -27,12 +27,10 @@ export default class SmartView extends AbstractView {
     const oldElement = this.element;
     this.removeElement();
 
-    const newElement = this.element;
-
-    parent.replaceChild(newElement, oldElement);
+    parent.replaceChild(this.element, oldElement);
   }
 
   restoreHandlers() {
-    throw new Error('Method \'restoreHandlers\' must be overwritten in the inheritor class');
+    throw new Error('Method ".restoreHandlers()" must be overwritten in the inheritor class.');
   }
 }

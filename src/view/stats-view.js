@@ -27,7 +27,7 @@ const createStatsTemplate = () => (
 const BAR_HEIGHT = 55;
 const ADD_ROW = 1;
 
-export default class StatsComponent extends AbstractView {
+export default class StatsView extends AbstractView {
   get template() {
     return createStatsTemplate();
   }
@@ -94,7 +94,6 @@ export default class StatsComponent extends AbstractView {
 
   #initChart = (container, title, data, formatterCallback) => {
     const heightFactor = data.length + ADD_ROW;
-
     container.height = BAR_HEIGHT * heightFactor;
     data.sort((a, b) => b[1].value - a[1].value);
 

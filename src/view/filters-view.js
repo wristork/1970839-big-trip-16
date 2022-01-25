@@ -1,6 +1,6 @@
 import AbstractView from './abstract-view';
 
-const createFilterTemplate = (futureLength, pastLength) => (
+const createFiltersTemplate = (futureLength, pastLength) => (
   `<div class="trip-controls__filters">
     <h2 class="visually-hidden">Filter events</h2>
     <form class="trip-filters" action="#" method="get">
@@ -34,7 +34,7 @@ const createFilterTemplate = (futureLength, pastLength) => (
   </div>`
 );
 
-export default class FiltersCompontent extends AbstractView {
+export default class FiltersView extends AbstractView {
   #futureEventsLength = 0;
   #pastEventsLength = 0;
   #callbacks = {};
@@ -44,7 +44,7 @@ export default class FiltersCompontent extends AbstractView {
   }
 
   get template() {
-    return createFilterTemplate(this.#futureEventsLength, this.#pastEventsLength);
+    return createFiltersTemplate(this.#futureEventsLength, this.#pastEventsLength);
   }
 
   setFutureEventsLength(value) {

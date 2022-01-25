@@ -75,7 +75,7 @@ const createEventTemplate = (event = {}) => {
   </li>`;
 };
 
-export default class EventComponent extends AbstractView {
+export default class EventView extends AbstractView {
   #event = null;
   #callbacks = {};
 
@@ -92,15 +92,13 @@ export default class EventComponent extends AbstractView {
   addEditStateClickHandler(cb) {
     this.#callbacks.editButtonClick = cb;
 
-    this.element.querySelector('.event__rollup-btn')
-      .addEventListener('click', this.#onEditButtonClick);
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onEditButtonClick);
   }
 
   addFavoriteButtonClickHandler(cb) {
     this.#callbacks.favotiveButtonClick = cb;
 
-    this.element.querySelector('.event__favorite-btn')
-      .addEventListener('click', this.#onFavoriteButtonClick);
+    this.element.querySelector('.event__favorite-btn').addEventListener('click', this.#onFavoriteButtonClick);
   }
 
   destroy() {

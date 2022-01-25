@@ -1,13 +1,9 @@
 import dayjs from 'dayjs';
 import { getFormattedDate } from '../utils/date';
+
 import AbstractView from './abstract-view';
 
-const isSameMonth = (dateA, dateB) => {
-  const monthA = dayjs(dateA).month();
-  const monthB = dayjs(dateB).month();
-
-  return monthA === monthB;
-};
+const isSameMonth = (dateA, dateB) => dayjs(dateA).month() === dayjs(dateB).month();
 
 const calcCost = (events) => {
   const mainCost = events.map((event) => event.price).reduce((acc, value) => Number(acc) + Number(value), 0);
@@ -29,14 +25,12 @@ const getTripPath = (events) => {
   const places = events.map((event) => event.destination.place);
   const uniquePlaces = Array.from(new Set(places));
 
-  const path = uniquePlaces.length > 3
+  return (uniquePlaces.length > 3
     ? `${places[0]} &mdash; ... &mdash; ${places[places.length - 1]}`
-    : uniquePlaces.join(' &mdash; ');
-
-  return path;
+    : uniquePlaces.join(' &mdash; '));
 };
 
-const createTripInfoTemplate = (events) => {
+const createInfoTemplate = (events) => {
   const startDate = events.length ? events[0].date.start : new Date();
   const endDate = events.length ? events[events.length - 1].date.end : new Date();
 
@@ -49,7 +43,7 @@ const createTripInfoTemplate = (events) => {
   const path = getTripPath(events);
   const totalCost = calcCost(events);
 
-  return `<section class="trip-main__trip-info  trip-info">
+  return (`<section class="trip-main__trip-info  trip-info">
     <div class="trip-info__main">
       <h1 class="trip-info__title">${path}</h1>
 
@@ -59,14 +53,14 @@ const createTripInfoTemplate = (events) => {
     <p class="trip-info__cost">
       Total: &euro;&nbsp;<span class="trip-info__cost-value">${totalCost}</span>
     </p>
-  </section>`;
+  </section>`);
 };
 
-export default class InfoComponent extends AbstractView {
+export default class InfoView extends AbstractView {
   #events = [];
 
   get template() {
-    return createTripInfoTemplate(this.#events);
+    return createInfoTemplate(this.#events);
   }
 
   get events() {

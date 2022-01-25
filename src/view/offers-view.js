@@ -5,7 +5,6 @@ const createOffersTemplate = (offers, isDisabled) => (
     const id = offer.id;
     const text = offer.title;
     const price = offer.price;
-
     const checked = offer.isChecked ? 'checked' : '';
 
     return `<div class="event__offer-selector">
@@ -27,7 +26,7 @@ const createOffersTemplate = (offers, isDisabled) => (
   }).join('')
 );
 
-const createOfferSectionTemplate = (offers, isDisabled) => {
+const createOfferItemTemplate = (offers, isDisabled) => {
   const offersTemplate = createOffersTemplate(offers, isDisabled);
 
   return `<section class="event__section  event__section--offers">
@@ -39,7 +38,7 @@ const createOfferSectionTemplate = (offers, isDisabled) => {
   </section>`;
 };
 
-export default class OffersComponent extends AbstractView {
+export default class OffersView extends AbstractView {
   #offers = null;
   #isDisabled = null;
 
@@ -51,6 +50,6 @@ export default class OffersComponent extends AbstractView {
   }
 
   get template() {
-    return createOfferSectionTemplate(this.#offers, this.#isDisabled);
+    return createOfferItemTemplate(this.#offers, this.#isDisabled);
   }
 }

@@ -2,8 +2,8 @@ import dayjs from 'dayjs';
 import { render, replace, remove, RenderPosition } from '../render';
 import { UserAction, UpdateType } from '../const';
 
-import EventComponent from '../view/event-view';
-import EditEventComponent from '../view/edit-event-view';
+import EventView from '../view/event-view';
+import EditEventView from '../view/edit-event-view';
 
 const BLANK_EVENT = {
   date: {
@@ -25,8 +25,8 @@ export default class EventPresenter {
   #parent = null;
 
   #sourceEvent = null;
-  #editEventComponent = null;
-  #eventComponent = null;
+  #editEventView = null;
+  #eventView = null;
 
   #destinations = [];
   #offers = [];
@@ -50,20 +50,20 @@ export default class EventPresenter {
   init(event = BLANK_EVENT) {
     this.#sourceEvent = event;
 
-    const oldEventComponent = this.#eventComponent;
+    const oldEventView = this.#eventView;
 
-    this.#editEventComponent = new EditEventComponent(event, this.#destinations, this.#offers);
-    this.#eventComponent = new EventComponent(event);
+    this.#editEventView = new EditEventView(event, this.#destinations, this.#offers);
+    this.#eventView = new EventView(event);
 
     if (event === BLANK_EVENT) {
-      render(this.#parent, this.#eventComponent, RenderPosition.AFTERBEGIN);
+      render(this.#parent, this.#eventView, RenderPosition.AFTERBEGIN);
 
       this.#initEditMode();
     } else {
-      if (oldEventComponent === null) {
-        render(this.#parent, this.#eventComponent, RenderPosition.BEFOREEND);
+      if (oldEventView === null) {
+        render(this.#parent, this.#eventView, RenderPosition.BEFOREEND);
       } else {
-        this.#replaceFromTo(this.#eventComponent, oldEventComponent);
+        this.#replaceFromTo(this.#eventView, oldEventView);
       }
     }
 
@@ -83,8 +83,8 @@ export default class EventPresenter {
       return;
     }
 
-    this.#editEventComponent.resetState(this.event);
-    this.#editEventComponent.removeDatePicker();
+    this.#editEventView.resetState(this.event);
+    this.#editEventView.removeDatePicker();
   }
 
   replaceToEdit = () => {
@@ -95,42 +95,42 @@ export default class EventPresenter {
   destroy() {
     document.removeEventListener('keydown', this.#onEscKeyDown);
 
-    if (this.#eventComponent !== null) {
-      remove(this.#eventComponent);
-      this.#eventComponent = null;
+    if (this.#eventView !== null) {
+      remove(this.#eventView);
+      this.#eventView = null;
     }
 
-    if (this.#editEventComponent !== null) {
-      this.#editEventComponent.removeDatePicker();
-      remove(this.#editEventComponent);
+    if (this.#editEventView !== null) {
+      this.#editEventView.removeDatePicker();
+      remove(this.#editEventView);
 
-      this.#editEventComponent = null;
+      this.#editEventView = null;
     }
   }
 
   setSavingState() {
-    this.#editEventComponent.updateData({
+    this.#editEventView.updateData({
       isSaving: true,
       isDisabled: true,
     });
   }
 
   setDeletingState() {
-    this.#editEventComponent.updateData({
+    this.#editEventView.updateData({
       isDeleting: true,
       isDisabled: true,
     });
   }
 
   setAbortingState() {
-    this.#editEventComponent.resetState(this.event);
-    this.#editEventComponent.shake();
+    this.#editEventView.resetState(this.event);
+    this.#editEventView.shake();
   }
 
   #initEditMode = () => {
-    this.#editEventComponent.setDatePicker();
+    this.#editEventView.setDatePicker();
 
-    this.#replaceFromTo(this.#editEventComponent, this.#eventComponent);
+    this.#replaceFromTo(this.#editEventView, this.#eventView);
     document.addEventListener('keydown', this.#onEscKeyDown);
   }
 
@@ -187,20 +187,20 @@ export default class EventPresenter {
   }
 
   #setAllHandlers = () => {
-    this.#eventComponent.addEditStateClickHandler(this.#onEditStateClick);
-    this.#eventComponent.addFavoriteButtonClickHandler(this.#onFavoriteButtonClick);
+    this.#eventView.addEditStateClickHandler(this.#onEditStateClick);
+    this.#eventView.addFavoriteButtonClickHandler(this.#onFavoriteButtonClick);
 
     this.#setEditHandlers();
   }
 
   #setEditHandlers = () => {
     if (this.event === BLANK_EVENT) {
-      this.#editEventComponent.addResetButtonClickHandler(this.#onCancel);
-      this.#editEventComponent.addFormSubmitHandler(this.#onAddSave);
+      this.#editEventView.addResetButtonClickHandler(this.#onCancel);
+      this.#editEventView.addFormSubmitHandler(this.#onAddSave);
     } else {
-      this.#editEventComponent.addNormalStateClickHandler(this.#onNormalStateClick);
-      this.#editEventComponent.addResetButtonClickHandler(this.#onDelete);
-      this.#editEventComponent.addFormSubmitHandler(this.#onEditSave);
+      this.#editEventView.addNormalStateClickHandler(this.#onNormalStateClick);
+      this.#editEventView.addResetButtonClickHandler(this.#onDelete);
+      this.#editEventView.addFormSubmitHandler(this.#onEditSave);
     }
   }
 

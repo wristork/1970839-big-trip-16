@@ -8,9 +8,9 @@ const noEventMessages = {
   [FilterTypes.PAST]: 'There are no past events now'
 };
 
-const createEmptyMessageTemplate = (text) => `<p class="trip-events__msg">${text}</p>`;
+const createNoEventsTemplate = (text) => `<p class="trip-events__msg">${text}</p>`;
 
-export default class NoEventsComponent extends AbstractView {
+export default class NoEventsView extends AbstractView {
   #filterType = null;
 
   constructor(filterType = FilterTypes.EVERYTHING) {
@@ -20,6 +20,6 @@ export default class NoEventsComponent extends AbstractView {
   }
 
   get template() {
-    return createEmptyMessageTemplate(noEventMessages[this.#filterType] || noEventMessages[FilterTypes.EVERYTHING]);
+    return createNoEventsTemplate(noEventMessages[this.#filterType] || noEventMessages[FilterTypes.EVERYTHING]);
   }
 }
