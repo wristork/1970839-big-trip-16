@@ -5,7 +5,7 @@ import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 import '../../node_modules/flatpickr/dist/themes/material_blue.css';
 
 import SmartView from './smart-view';
-import DetailsView from './event-details-view';
+import EventDetailsView from './event-details-view';
 
 import { getFormattedDate } from '../utils/date';
 
@@ -49,7 +49,7 @@ const createEditEventTemplate = (data, destinations, offerTypes) => {
   } = data;
 
   const detailsTemplate = (isHaveDescription || isHaveImages || isHaveOffers)
-    ? new DetailsView(offers, destination, isDisabled).template
+    ? new EventDetailsView(offers, destination, isDisabled).template
     : '';
 
   const deleteText = isDeleting ? 'Deleting...' : 'Delete';
